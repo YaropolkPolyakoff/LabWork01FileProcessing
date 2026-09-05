@@ -14,7 +14,7 @@ namespace ZooTicketSystem.Utils
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("Файл с животными не найден: " + filePath);
             
-            string[] lines = File.ReadAllLines(filePath);
+            string[] lines = File.ReadAllLines(filePath, System.Text.Encoding.UTF8);
             
             int i = 0;
             while (i < lines.Length)
@@ -63,7 +63,7 @@ namespace ZooTicketSystem.Utils
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("Файл с информацией о покупателе не найден: " + filePath);
             
-            string[] lines = File.ReadAllLines(filePath);
+            string[] lines = File.ReadAllLines(filePath, System.Text.Encoding.UTF8);
             
             string name = "";
             int age = 0;
@@ -101,7 +101,7 @@ namespace ZooTicketSystem.Utils
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("Файл с запросом на покупку не найден: " + filePath);
             
-            string[] lines = File.ReadAllLines(filePath);
+            string[] lines = File.ReadAllLines(filePath, System.Text.Encoding.UTF8);
             List<string> ticketTypes = new List<string>();
             
             int i = 0;
@@ -132,7 +132,7 @@ namespace ZooTicketSystem.Utils
                     Directory.CreateDirectory(directory);
                 }
                 
-                File.WriteAllText(filePath, content);
+                File.WriteAllText(filePath, content, System.Text.Encoding.UTF8);
                 Console.WriteLine("Результат сохранен в файл: " + filePath);
             }
             catch (Exception ex)
@@ -152,7 +152,7 @@ namespace ZooTicketSystem.Utils
                     Directory.CreateDirectory(directory);
                 }
                 
-                File.AppendAllText(filePath, content + Environment.NewLine);
+                File.AppendAllText(filePath, content + Environment.NewLine, System.Text.Encoding.UTF8);
             }
             catch (Exception ex)
             {
