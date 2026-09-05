@@ -1,0 +1,6 @@
+# Запрос на покупку билетов
+# Один тип билета на строку: Adult, Child, Student, Family
+Adult
+Adult
+Child
+
