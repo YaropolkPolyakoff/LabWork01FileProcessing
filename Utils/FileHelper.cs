@@ -14,7 +14,7 @@ namespace ZooTicketSystem.Utils
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("Файл с животными не найден: " + filePath);
             
-            string[] lines = File.ReadAllLines(filePath, System.Text.Encoding.UTF8);
+            string[] lines = File.ReadAllLines(filePath, new System.Text.UTF8Encoding(true));
             
             int i = 0;
             while (i < lines.Length)
@@ -63,7 +63,7 @@ namespace ZooTicketSystem.Utils
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("Файл с информацией о покупателе не найден: " + filePath);
             
-            string[] lines = File.ReadAllLines(filePath, System.Text.Encoding.UTF8);
+            string[] lines = File.ReadAllLines(filePath, new System.Text.UTF8Encoding(true));
             
             string name = "";
             int age = 0;
@@ -93,6 +93,18 @@ namespace ZooTicketSystem.Utils
                 i++;
             }
             
+            // Проверка обязательных полей
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("В файле покупателя не найдено поле 'name'. Проверьте формат файла.");
+            
+            if (age == 0)
+                throw new ArgumentException("В файле покупателя не найдено корректное поле 'age'. Проверьте формат файла.");
+            
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("В файле покупателя не найдено поле 'email'. Проверьте формат файла.");
+            
+            Console.WriteLine("Данные покупателя успешно загружены из файла");
+            
             return new Customer(name, age, email, phone);
         }
 
@@ -101,7 +113,7 @@ namespace ZooTicketSystem.Utils
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("Файл с запросом на покупку не найден: " + filePath);
             
-            string[] lines = File.ReadAllLines(filePath, System.Text.Encoding.UTF8);
+            string[] lines = File.ReadAllLines(filePath, new System.Text.UTF8Encoding(true));
             List<string> ticketTypes = new List<string>();
             
             int i = 0;

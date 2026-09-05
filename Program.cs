@@ -10,8 +10,14 @@ namespace ZooTicketSystem
     {
         static void Main(string[] inputArguments)
         {
-            Console.InputEncoding = System.Text.Encoding.UTF8;
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            // Установка кодировки консоли для правильного отображения кириллицы
+            try
+            {
+                Console.OutputEncoding = System.Text.Encoding.UTF8;
+                Console.InputEncoding = System.Text.Encoding.UTF8;
+            }
+            catch { /* Игнорируем ошибки установки кодировки на некоторых системах */ }
+            
             WriteHeader();
 
             try
