@@ -1,0 +1,9 @@
+# Групповой заказ (5+ билетов) - демонстрация скидки 20%
+Adult
+Adult
+Adult
+Child
+Child
+Student
+Family
+
