@@ -16,13 +16,19 @@ namespace ZooTicketSystem.Models
         public Animal(string name, string species, string habitat, string description, int age)
         {
             if (string.IsNullOrWhiteSpace(name))
+            {
                 throw new ArgumentException("Имя животного не может быть пустым");
+            }
             
             if (string.IsNullOrWhiteSpace(species))
+            {
                 throw new ArgumentException("Вид животного не может быть пустым");
+            }
             
             if (age < 0)
+            {
                 throw new ArgumentException("Возраст животного не может быть отрицательным");
+            }
 
             Name = name;
             Species = species;

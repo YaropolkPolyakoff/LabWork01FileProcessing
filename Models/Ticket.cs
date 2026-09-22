@@ -13,10 +13,14 @@ namespace ZooTicketSystem.Models
         public Ticket(TicketType type, decimal basePrice, DateTime purchaseDate, DateTime validDate)
         {
             if (basePrice <= 0)
+            {
                 throw new ArgumentException("Цена билета должна быть положительной");
+            }
             
             if (validDate < purchaseDate)
+            {
                 throw new ArgumentException("Дата действия билета не может быть раньше даты покупки");
+            }
 
             Type = type;
             BasePrice = basePrice;
@@ -30,15 +34,25 @@ namespace ZooTicketSystem.Models
             decimal price;
             
             if (type == TicketType.Adult)
+            {
                 price = 500m;
+            }
             else if (type == TicketType.Child)
+            {
                 price = 250m;
+            }
             else if (type == TicketType.Student)
+            {
                 price = 350m;
+            }
             else if (type == TicketType.Family)
+            {
                 price = 1500m;
+            }
             else
+            {
                 throw new ArgumentException("Неизвестный тип билета");
+            }
             
             return price;
         }
@@ -46,13 +60,22 @@ namespace ZooTicketSystem.Models
         public string GetStatusText()
         {
             if (Status == PurchaseStatus.Pending)
+            {
                 return "Ожидает подтверждения";
+            }
             else if (Status == PurchaseStatus.Confirmed)
+            {
                 return "Подтверждена";
+            }
             else if (Status == PurchaseStatus.Cancelled)
+            {
                 return "Отменена";
+            }
             else if (Status == PurchaseStatus.Used)
+            {
                 return "Использована";
+            }
+            
             return "Неизвестно";
         }
 
