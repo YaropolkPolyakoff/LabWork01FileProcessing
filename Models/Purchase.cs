@@ -17,13 +17,19 @@ namespace ZooTicketSystem.Models
         public Purchase(Customer customer, List<Ticket> tickets, DateTime purchaseDate)
         {
             if (customer == null)
+            {
                 throw new ArgumentException("Покупатель не может быть null");
+            }
             
             if (tickets == null || tickets.Count == 0)
+            {
                 throw new ArgumentException("Список билетов не может быть пустым");
+            }
             
             if (tickets.Count > 10)
+            {
                 throw new ArgumentException("Нельзя купить более 10 билетов за одну покупку");
+            }
 
             Customer = customer;
             Tickets = tickets;
@@ -47,7 +53,9 @@ namespace ZooTicketSystem.Models
         public void Confirm()
         {
             if (!CanConfirm())
+            {
                 throw new InvalidOperationException("Невозможно подтвердить покупку со статусом: " + Status);
+            }
             
             Status = PurchaseStatus.Confirmed;
             foreach (var ticket in Tickets)
@@ -60,7 +68,9 @@ namespace ZooTicketSystem.Models
         {
             if (Status == PurchaseStatus.Used)
                 throw new InvalidOperationException("Нельзя отменить использованную покупку");
+            {
             
+            }
             Status = PurchaseStatus.Cancelled;
             foreach (var ticket in Tickets)
             {

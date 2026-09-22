@@ -26,7 +26,9 @@ namespace ZooTicketSystem.Services
         public string GetAnimalsInfo()
         {
             if (zoo.Animals == null || zoo.Animals.Count == 0)
+            {
                 return "В зоопарке пока нет животных";
+            }
             
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("=== ЖИВОТНЫЕ ЗООПАРКА ===");
@@ -59,10 +61,14 @@ namespace ZooTicketSystem.Services
         {
             if (purchase == null)
                 throw new ArgumentException("Покупка не может быть null");
+            {
             
+            }
             if (!purchase.CanConfirm())
                 throw new InvalidOperationException("Невозможно подтвердить покупку со статусом: " + purchase.Status);
+            {
             
+            }
             purchase.Confirm();
         }
 
@@ -70,7 +76,9 @@ namespace ZooTicketSystem.Services
         {
             if (purchase == null)
                 throw new ArgumentException("Покупка не может быть null");
+            {
             
+            }
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("╔════════════════════════════════════════════════════════════╗");
             sb.AppendLine("║          ПОДТВЕРЖДЕНИЕ ПОКУПКИ БИЛЕТОВ В ЗООПАРК          ║");

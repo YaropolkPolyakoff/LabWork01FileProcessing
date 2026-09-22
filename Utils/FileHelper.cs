@@ -12,47 +12,48 @@ namespace ZooTicketSystem.Utils
             List<Animal> animals = new List<Animal>();
             
             if (!File.Exists(filePath))
-                throw new FileNotFoundException("Файл с животными не найден: " + filePath);
-            
-            string[] lines = File.ReadAllLines(filePath, new System.Text.UTF8Encoding(true));
-            
-            int i = 0;
-            while (i < lines.Length)
             {
-                string line = lines[i].Trim();
-                
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                throw new FileNotFoundException("Файл с животными не найден: " + filePath);
+            }
+            
+            // Используем StreamReader для чтения файла
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            using (StreamReader reader = new StreamReader(fs, new System.Text.UTF8Encoding(true)))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    i++;
-                    continue;
-                }
-                
-                string[] parts = line.Split('|');
-                
-                if (parts.Length < 5)
-                {
-                    Console.WriteLine("Предупреждение: пропущена некорректная строка: " + line);
-                    i++;
-                    continue;
-                }
-                
-                try
-                {
-                    string name = parts[0].Trim();
-                    string species = parts[1].Trim();
-                    string habitat = parts[2].Trim();
-                    string description = parts[3].Trim();
-                    int age = int.Parse(parts[4].Trim());
+                    line = line.Trim();
+            
+                    if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                    {
+                        continue;
+                    }
                     
-                    Animal animal = new Animal(name, species, habitat, description, age);
-                    animals.Add(animal);
+                    string[] parts = line.Split('|');
+                    
+                    if (parts.Length < 5)
+                    {
+                        Console.WriteLine("Предупреждение: пропущена некорректная строка: " + line);
+                        continue;
+                    }
+                    
+                    try
+                    {
+                        string name = parts[0].Trim();
+                        string species = parts[1].Trim();
+                        string habitat = parts[2].Trim();
+                        string description = parts[3].Trim();
+                        int age = int.Parse(parts[4].Trim());
+                        
+                        Animal animal = new Animal(name, species, habitat, description, age);
+                        animals.Add(animal);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Ошибка при чтении животного: " + ex.Message);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Ошибка при чтении животного: " + ex.Message);
-                }
-                
-                i++;
             }
             
             return animals;
@@ -61,47 +62,63 @@ namespace ZooTicketSystem.Utils
         public static Customer ReadCustomerFromFile(string filePath)
         {
             if (!File.Exists(filePath))
+            {
                 throw new FileNotFoundException("Файл с информацией о покупателе не найден: " + filePath);
-            
-            string[] lines = File.ReadAllLines(filePath, new System.Text.UTF8Encoding(true));
+            }
             
             string name = "";
             int age = 0;
             string email = "";
             string phone = "";
             
-            int i = 0;
-            while (i < lines.Length)
+            // Используем StreamReader для чтения файла
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            using (StreamReader reader = new StreamReader(fs, new System.Text.UTF8Encoding(true)))
             {
-                string line = lines[i].Trim();
-                
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                string line;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    i++;
-                    continue;
+                    line = line.Trim();
+                    
+                    if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                    {
+                        continue;
+                    }
+                    
+                    if (line.StartsWith("name=") || line.StartsWith("Name="))
+                    {
+                        name = line.Substring(5).Trim();
+                    }
+                    else if (line.StartsWith("age=") || line.StartsWith("Age="))
+                    {
+                        age = int.Parse(line.Substring(4).Trim());
+                    }
+                    else if (line.StartsWith("email=") || line.StartsWith("Email="))
+                    {
+                        email = line.Substring(6).Trim();
+                    }
+                    else if (line.StartsWith("phone=") || line.StartsWith("Phone="))
+                    {
+                        phone = line.Substring(6).Trim();
+                    }
                 }
-                
-                if (line.StartsWith("name=") || line.StartsWith("Name="))
-                    name = line.Substring(5).Trim();
-                else if (line.StartsWith("age=") || line.StartsWith("Age="))
-                    age = int.Parse(line.Substring(4).Trim());
-                else if (line.StartsWith("email=") || line.StartsWith("Email="))
-                    email = line.Substring(6).Trim();
-                else if (line.StartsWith("phone=") || line.StartsWith("Phone="))
-                    phone = line.Substring(6).Trim();
-                
-                i++;
             }
             
             // Проверка обязательных полей
             if (string.IsNullOrWhiteSpace(name))
+            {
                 throw new ArgumentException("В файле покупателя не найдено поле 'name'. Проверьте формат файла.");
+            }
             
             if (age == 0)
+            {
                 throw new ArgumentException("В файле покупателя не найдено корректное поле 'age'. Проверьте формат файла.");
+            }
             
             if (string.IsNullOrWhiteSpace(email))
+            {
                 throw new ArgumentException("В файле покупателя не найдено поле 'email'. Проверьте формат файла.");
+            }
             
             Console.WriteLine("Данные покупателя успешно загружены из файла");
             
@@ -111,24 +128,28 @@ namespace ZooTicketSystem.Utils
         public static List<string> ReadPurchaseRequestFromFile(string filePath)
         {
             if (!File.Exists(filePath))
+            {
                 throw new FileNotFoundException("Файл с запросом на покупку не найден: " + filePath);
+            }
             
-            string[] lines = File.ReadAllLines(filePath, new System.Text.UTF8Encoding(true));
             List<string> ticketTypes = new List<string>();
             
-            int i = 0;
-            while (i < lines.Length)
+            // Используем StreamWriter для чтения файла
+            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            using (StreamReader reader = new StreamReader(fs, new System.Text.UTF8Encoding(true)))
             {
-                string line = lines[i].Trim();
-                
-                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                string line;
+                while ((line = reader.ReadLine()) != null)
                 {
-                    i++;
-                    continue;
+                    line = line.Trim();
+                    
+                    if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                    {
+                        continue;
+                    }
+                    
+                    ticketTypes.Add(line);
                 }
-                
-                ticketTypes.Add(line);
-                i++;
             }
             
             return ticketTypes;
@@ -145,7 +166,13 @@ namespace ZooTicketSystem.Utils
                 }
                 
                 File.WriteAllText(filePath, content, System.Text.Encoding.UTF8);
-                Console.WriteLine("Результат сохранен в файл: " + filePath);
+                // Используем StreamWriter для записи в файл
+                using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                using (StreamWriter writer = new StreamWriter(fs, System.Text.Encoding.UTF8))
+                {
+                    writer.Write(content);
+                }
+                
             }
             catch (Exception ex)
             {
@@ -163,7 +190,12 @@ namespace ZooTicketSystem.Utils
                 {
                     Directory.CreateDirectory(directory);
                 }
-                
+                // Используем StreamWriter для добавления в файл
+                using (FileStream fs = new FileStream(filePath, FileMode.Append, FileAccess.Write))
+                using (StreamWriter writer = new StreamWriter(fs, System.Text.Encoding.UTF8))
+                {
+                    writer.WriteLine(content);
+                }
                 File.AppendAllText(filePath, content + Environment.NewLine, System.Text.Encoding.UTF8);
             }
             catch (Exception ex)

@@ -43,7 +43,9 @@ namespace ZooTicketSystem.Services
         public decimal CalculateTotalPrice(Purchase purchase, Zoo zoo)
         {
             if (purchase == null)
+            {
                 throw new ArgumentException("Покупка не может быть null");
+            }
             
             decimal totalPrice = 0;
             
@@ -61,7 +63,9 @@ namespace ZooTicketSystem.Services
             totalPrice = CalculateGroupDiscount(totalPrice, purchase.Tickets.Count);
             
             if (totalPrice < 0)
+            {
                 throw new InvalidOperationException("Итоговая цена не может быть отрицательной");
+            }
             
             return Math.Round(totalPrice, 2);
         }
