@@ -8,6 +8,9 @@ namespace ZooTicketSystem
 {
     class Program
     {
+        // Сохраняем аргумент для списка животных
+        private static string animalListArgument = "";
+        
         static void Main(string[] inputArguments)
         {
             // Установка кодировки консоли для правильного отображения кириллицы
@@ -21,6 +24,13 @@ namespace ZooTicketSystem
                 /* Игнорируем ошибки установки кодировки на некоторых системах */ 
             }
             
+            // Читаем аргумент для выбора списка животных
+            if (inputArguments != null && inputArguments.Length > 0)
+            {
+                animalListArgument = inputArguments[0];
+            }
+            
+            WriteUsageInfo();
             WriteHeader();
 
             try
@@ -48,6 +58,27 @@ namespace ZooTicketSystem
             PauseBeforeExit();
         }
 
+        static void WriteUsageInfo()
+        {
+            if (string.IsNullOrEmpty(animalListArgument))
+            {
+                Console.WriteLine("──────────────────────────────────────────────");
+                Console.WriteLine("Совет: Вы можете выбрать список животных,");
+                Console.WriteLine("указав команду при запуске программы:");
+                Console.WriteLine("  • zoo - полный список животных зоопарка");
+                Console.WriteLine("  • default - базовый список (3 животных)");
+                Console.WriteLine();
+                Console.WriteLine("Пример: ZooTicketSystem.exe zoo");
+                Console.WriteLine("──────────────────────────────────────────────");
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine("Выбран список животных: " + animalListArgument);
+                Console.WriteLine();
+            }
+        }
+        
         static void WriteHeader()
         {
             Console.WriteLine("###############################################");
@@ -87,47 +118,20 @@ namespace ZooTicketSystem
         static void SetupZoo(ZooService svc)
         {
             Console.WriteLine(">>> Шаг 1: Инициализация зоопарка");
+            Console.WriteLine();
             
-            Console.WriteLine("Хотите загрузить животных из файла? (да/нет):");
-            string response = Console.ReadLine()?.Trim().ToLower();
-            
-            List<Animal> animalList = new List<Animal>();
-            
-            if (response == "да" || response == "yes" || response == "y")
-            {
-                Console.Write("Введите путь к файлу с животными: ");
-                string filepath = Console.ReadLine()?.Trim();
-                
-                if (!string.IsNullOrEmpty(filepath))
-                {
-                    try
-                    {
-                        animalList = FileHelper.ReadAnimalsFromFile(filepath);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Ошибка при загрузке: " + ex.Message);
-                        Console.WriteLine("Продолжаем без животных.");
-                    }
-                }
-            }
-            else
-            {
-                // Добавляем несколько животных по умолчанию
-                animalList.Add(new Animal("Лев Симба", "Лев африканский", "Саванна", "Царь зверей", 5));
-                animalList.Add(new Animal("Слон Дамбо", "Слон индийский", "Тропический лес", "Умный гигант", 12));
-                animalList.Add(new Animal("Пингвин Коля", "Пингвин императорский", "Антарктида", "Смешной птиц", 3));
-                Console.WriteLine("Загружены животные по умолчанию.");
-            }
+            // Загружаем животных по простому аргументу (не требуем путь к файлу)
+            List<Animal> animalList = FileHelper.LoadAnimalsByType(animalListArgument);
             
             Zoo facility = svc.GetZoo();
             
-            for (int counter = 0; counter < animalList.Count; counter++)
+            foreach (Animal animal in animalList)
             {
-                facility.AddAnimal(animalList[counter]);
+                facility.AddAnimal(animal);
             }
             
-            Console.WriteLine("Добавлено существ: " + animalList.Count);
+            Console.WriteLine("Добавлено животных: " + animalList.Count);
+            Console.WriteLine();
             
             if (animalList.Count > 0)
             {
