@@ -192,8 +192,8 @@ namespace ZooTicketSystem
             Console.WriteLine("0. Завершить выбор");
             
             List<Ticket> resultTickets = new List<Ticket>();
-            DateTime timeNow = DateTime.Now;
-            DateTime expiryDate = timeNow.AddDays(7);
+            DateTime currentDateTime = DateTime.Now;
+            DateTime ticketValidDate = currentDateTime.AddDays(7);
             
             bool continueSelection = true;
             
@@ -208,23 +208,23 @@ namespace ZooTicketSystem
                     continue;
                 }
                 
-                TicketType category;
+                TicketType selectedType;
                 
                 if (input == "1")
                 {
-                    category = TicketType.Adult;
+                    selectedType = TicketType.Adult;
                 }
                 else if (input == "2")
                 {
-                    category = TicketType.Child;
+                    selectedType = TicketType.Child;
                 }
                 else if (input == "3")
                 {
-                    category = TicketType.Student;
+                    selectedType = TicketType.Student;
                 }
                 else if (input == "4")
                 {
-                    category = TicketType.Family;
+                    selectedType = TicketType.Family;
                 }
                 else
                 {
@@ -232,9 +232,9 @@ namespace ZooTicketSystem
                     continue;
                 }
                 
-                decimal cost = Ticket.GetBasePriceByType(category);
-                resultTickets.Add(new Ticket(category, cost, timeNow, expiryDate));
-                Console.WriteLine("Добавлен билет: " + category + " - " + cost + " руб.");
+                decimal priceAmount = Ticket.GetBasePriceByType(selectedType);
+                resultTickets.Add(new Ticket(selectedType, priceAmount, currentDateTime, ticketValidDate));
+                Console.WriteLine("Добавлен билет: " + selectedType + " - " + priceAmount + " руб.");
             }
             
             Console.WriteLine("Оформлено билетов: " + resultTickets.Count);
