@@ -59,6 +59,64 @@ namespace ZooTicketSystem.Utils
             return animals;
         }
 
+        /// <summary>
+        /// Загружает список животных по простому названию списка.
+        /// Обычные пользователи используют простые команды вместо путей к файлам.
+        /// </summary>
+        /// <param name="listType">Тип списка: "zoo", "default" или пусто</param>
+        /// <returns>Список животных</returns>
+        public static List<Animal> LoadAnimalsByType(string listType)
+        {
+            List<Animal> animals = new List<Animal>();
+            
+            // Нормализуем ввод пользователя
+            string normalizedType = (listType ?? "").Trim().ToLower();
+            
+            // Если пользователь указал "zoo" или "full" - загружаем из файла animals.txt
+            if (normalizedType == "zoo" || normalizedType == "full" || normalizedType == "зоопарк")
+            {
+                string filePath = "animals.txt";
+                
+                if (!File.Exists(filePath))
+                {
+                    Console.WriteLine("Файл animals.txt не найден. Загружаем животных по умолчанию.");
+                    return GetDefaultAnimals();
+                }
+                
+                try
+                {
+                    animals = ReadAnimalsFromFile(filePath);
+                    Console.WriteLine("Загружен полный список животных из зоопарка!");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ошибка при загрузке списка: " + ex.Message);
+                    Console.WriteLine("Загружаем животных по умолчанию.");
+                    return GetDefaultAnimals();
+                }
+            }
+            else
+            {
+                // По умолчанию или если указано "default"
+                animals = GetDefaultAnimals();
+                Console.WriteLine("Загружены животные по умолчанию.");
+            }
+            
+            return animals;
+        }
+        
+        /// <summary>
+        /// Возвращает список животных по умолчанию
+        /// </summary>
+        private static List<Animal> GetDefaultAnimals()
+        {
+            List<Animal> animals = new List<Animal>();
+            animals.Add(new Animal("Лев Симба", "Лев африканский", "Саванна", "Царь зверей", 5));
+            animals.Add(new Animal("Слон Дамбо", "Слон индийский", "Тропический лес", "Умный гигант", 12));
+            animals.Add(new Animal("Пингвин Коля", "Пингвин императорский", "Антарктида", "Смешной птиц", 3));
+            return animals;
+        }
+
         public static Customer ReadCustomerFromFile(string filePath)
         {
             if (!File.Exists(filePath))
