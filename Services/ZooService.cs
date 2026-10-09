@@ -49,7 +49,9 @@ namespace ZooTicketSystem.Services
         {
             validationService.ValidatePurchaseRequest(customer, tickets, purchaseDate, zoo);
             
-            Purchase purchase = new Purchase(customer, tickets, purchaseDate);
+            string confirmationNumber = Purchase.GenerateConfirmationNumber();
+            
+            Purchase purchase = new Purchase(customer, tickets, purchaseDate, confirmationNumber);
             
             decimal totalPrice = pricingService.CalculateTotalPrice(purchase, zoo);
             purchase.TotalAmount = totalPrice;

@@ -14,7 +14,7 @@ namespace ZooTicketSystem.Models
         public DateTime PurchaseDate { get; set; }
         public string ConfirmationNumber { get; set; }
 
-        public Purchase(Customer customer, List<Ticket> tickets, DateTime purchaseDate)
+        public Purchase(Customer customer, List<Ticket> tickets, DateTime purchaseDate, string confirmationNumber)
         {
             if (customer == null)
             {
@@ -31,17 +31,23 @@ namespace ZooTicketSystem.Models
                 throw new ArgumentException("Нельзя купить более 10 билетов за одну покупку");
             }
 
+            if (string.IsNullOrWhiteSpace(confirmationNumber))
+            {
+                throw new ArgumentException("Номер подтверждения не может быть пустым");
+            }
+
             Customer = customer;
             Tickets = tickets;
             PurchaseDate = purchaseDate;
             Status = PurchaseStatus.Pending;
-            ConfirmationNumber = GenerateConfirmationNumber();
+            ConfirmationNumber = confirmationNumber;
             TotalAmount = 0;
         }
 
-        private string GenerateConfirmationNumber()
+        public static string GenerateConfirmationNumber()
         {
-            Random random = new Random();
+            // Using Guid ensures uniqueness without needing Random
+            Random random = new Random(Guid.NewGuid().GetHashCode());
             return "ZOO-" + DateTime.Now.ToString("yyyyMMdd") + "-" + random.Next(1000, 9999);
         }
 
