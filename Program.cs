@@ -10,6 +10,9 @@ namespace ZooTicketSystem
     {
         // Сохраняем аргумент для списка животных
         private static string animalListArgument = "";
+        private static ConsoleUI consoleUI = new ConsoleUI();
+        private static InputParser inputParser = new InputParser();
+        private static InputReader inputReader = new InputReader(new InputParser());
         
         static void Main(string[] inputArguments)
         {
@@ -143,125 +146,69 @@ namespace ZooTicketSystem
         {
             Console.WriteLine(">>> Шаг 2: Загрузка данных клиента");
             
-            Console.Write("Введите ваше имя: ");
-            string name = Console.ReadLine()?.Trim();
+            string name = inputReader.ReadNonEmptyLine(
+                "Введите ваше имя: ",
+                "Имя не может быть пустым. Введите ваше имя: ");
             
-            while (string.IsNullOrWhiteSpace(name))
-            {
-                Console.Write("Имя не может быть пустым. Введите ваше имя: ");
-                name = Console.ReadLine()?.Trim();
-            }
+            int age = inputReader.ReadPositiveInteger(
+                "Введите ваш возраст: ",
+                "Введите корректный возраст (положительное число): ");
             
-            Console.Write("Введите ваш возраст: ");
-            int age = 0;
-            while (age <= 0)
-            {
-                string ageInput = Console.ReadLine()?.Trim();
-                if (!int.TryParse(ageInput, out age) || age <= 0)
-                {
-                    Console.Write("Введите корректный возраст (положительное число): ");
-                }
-            }
+            string email = inputReader.ReadEmail(
+                "Введите ваш email: ",
+                "Введите корректный email: ");
             
-            Console.Write("Введите ваш email: ");
-            string email = Console.ReadLine()?.Trim();
-            
-            while (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
-            {
-                Console.Write("Введите корректный email: ");
-                email = Console.ReadLine()?.Trim();
-            }
-            
-            Console.Write("Введите ваш телефон (или нажмите Enter для пропуска): ");
-            string phone = Console.ReadLine()?.Trim();
+            string phone = inputReader.ReadOptionalLine(
+                "Введите ваш телефон (или нажмите Enter для пропуска): ");
             
             Customer person = new Customer(name, age, email, phone);
-            Console.WriteLine("\nКлиент: " + person.Name + " [" + person.Age + " лет] - " + person.GetCategory());
+            Console.WriteLine($"\nКлиент: {person.Name} [{person.Age} лет] - {person.GetCategory()}");
             return person;
         }
 
         static List<Ticket> SelectTicketsInteractively(ValidationService validator)
         {
-            Console.WriteLine(">>> Шаг 3: Формирование билетов");
-            
-            Console.WriteLine("\nДоступные типы билетов:");
-            Console.WriteLine("1. Adult - Взрослый билет (500 руб.)");
-            Console.WriteLine("2. Child - Детский билет (250 руб.)");
-            Console.WriteLine("3. Student - Студенческий билет (350 руб.)");
-            Console.WriteLine("4. Family - Семейный билет (1500 руб.)");
-            Console.WriteLine("0. Завершить выбор");
+            consoleUI.DisplayStepHeader("Шаг 3: Формирование билетов");
+            consoleUI.DisplayTicketOptions();
             
             List<Ticket> resultTickets = new List<Ticket>();
             DateTime currentDateTime = DateTime.Now;
             DateTime ticketValidDate = currentDateTime.AddDays(7);
             
-            bool continueSelection = true;
-            
-            while (continueSelection)
+            while (true)
             {
-                Console.Write("\nВыберите тип билета (1-4) или 0 для завершения: ");
-                string input = Console.ReadLine()?.Trim();
+                string input = inputReader.ReadOptionalLine(
+                    "\nВыберите тип билета (1-4) или 0 для завершения: ");
                 
                 if (input == "0")
                 {
-                    continueSelection = false;
-                    continue;
+                    break;
                 }
                 
-                TicketType selectedType;
-                
-                if (input == "1")
+                if (inputParser.TryParseTicketTypeChoice(input, out TicketType selectedType))
                 {
-                    selectedType = TicketType.Adult;
-                }
-                else if (input == "2")
-                {
-                    selectedType = TicketType.Child;
-                }
-                else if (input == "3")
-                {
-                    selectedType = TicketType.Student;
-                }
-                else if (input == "4")
-                {
-                    selectedType = TicketType.Family;
+                    decimal priceAmount = Ticket.GetBasePriceByType(selectedType);
+                    resultTickets.Add(new Ticket(selectedType, priceAmount, currentDateTime, ticketValidDate));
+                    consoleUI.DisplayTicketAdded(selectedType, priceAmount);
                 }
                 else
                 {
                     Console.WriteLine("Некорректный выбор. Попробуйте снова.");
-                    continue;
                 }
-                
-                decimal priceAmount = Ticket.GetBasePriceByType(selectedType);
-                resultTickets.Add(new Ticket(selectedType, priceAmount, currentDateTime, ticketValidDate));
-                Console.WriteLine("Добавлен билет: " + selectedType + " - " + priceAmount + " руб.");
             }
             
-            Console.WriteLine("Оформлено билетов: " + resultTickets.Count);
+            consoleUI.DisplayTicketsCount(resultTickets.Count);
             return resultTickets;
         }
 
         static bool ConfirmPayment(Purchase order)
         {
-            Console.WriteLine("\n>>> Шаг 4: Подтверждение оплаты");
-            Console.WriteLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            Console.WriteLine("Покупатель: " + order.Customer.Name);
-            Console.WriteLine("Количество билетов: " + order.Tickets.Count);
+            consoleUI.DisplayOrderSummary(order);
             
-            Console.WriteLine("\nСостав заказа:");
-            for (int i = 0; i < order.Tickets.Count; i++)
-            {
-                Ticket ticket = order.Tickets[i];
-                Console.WriteLine("  " + (i + 1) + ". " + ticket.Type + " - " + ticket.BasePrice + " руб.");
-            }
+            string confirmation = inputReader.ReadOptionalLine(
+                "\nПодтвердите оплату (да/нет): ");
             
-            Console.WriteLine("\nИТОГО К ОПЛАТЕ: " + order.TotalAmount + " руб.");
-            Console.WriteLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-            
-            Console.Write("\nПодтвердите оплату (да/нет): ");
-            string confirmation = Console.ReadLine()?.Trim().ToLower();
-            
-            return (confirmation == "да" || confirmation == "yes" || confirmation == "y");
+            return inputParser.ParseYesNoConfirmation(confirmation);
         }
 
         static Purchase ExecuteTransaction(ZooService svc, Customer buyer, List<Ticket> items)
@@ -278,13 +225,13 @@ namespace ZooTicketSystem
             string document = svc.GeneratePurchaseConfirmation(order);
             Console.WriteLine(document);
             
-            Console.Write("\nСохранить подтверждение в файл? (да/нет): ");
-            string response = Console.ReadLine()?.Trim().ToLower();
+            string response = inputReader.ReadOptionalLine(
+                "\nСохранить подтверждение в файл? (да/нет): ");
             
-            if (response == "да" || response == "yes" || response == "y")
+            if (inputParser.ParseYesNoConfirmation(response))
             {
-                Console.Write("Введите имя файла (или нажмите Enter для 'purchase_confirmation.txt'): ");
-                string filename = Console.ReadLine()?.Trim();
+                string filename = inputReader.ReadOptionalLine(
+                    "Введите имя файла (или нажмите Enter для 'purchase_confirmation.txt'): ");
                 
                 if (string.IsNullOrEmpty(filename))
                 {
