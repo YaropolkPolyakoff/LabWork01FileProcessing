@@ -51,9 +51,11 @@ namespace ZooTicketSystem.Utils
                 return false;
             }
 
-            string normalized = input.Trim().ToLower();
+            // Используем инвариантную культуру для корректной работы с кириллицей
+            string normalized = input.Trim().ToLowerInvariant();
 
-            return normalized == "да" || 
+            return normalized == "да" ||
+                   normalized == "д" ||
                    normalized == "yes" || 
                    normalized == "y";
         }
