@@ -51,13 +51,13 @@ namespace ZooTicketSystem.Utils
                 return false;
             }
 
-            // Используем инвариантную культуру для корректной работы с кириллицей
-            string normalized = input.Trim().ToLowerInvariant();
+            // Используем CurrentCultureIgnoreCase для корректной работы с кириллицей
+            string normalized = input.Trim();
 
-            return normalized == "да" ||
-                   normalized == "д" ||
-                   normalized == "yes" || 
-                   normalized == "y";
+            return normalized.Equals("да", StringComparison.CurrentCultureIgnoreCase) ||
+                   normalized.Equals("д", StringComparison.CurrentCultureIgnoreCase) ||
+                   normalized.Equals("yes", StringComparison.CurrentCultureIgnoreCase) || 
+                   normalized.Equals("y", StringComparison.CurrentCultureIgnoreCase);
         }
 
         /// <summary>
