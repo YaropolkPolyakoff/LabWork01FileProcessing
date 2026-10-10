@@ -259,9 +259,9 @@ namespace ZooTicketSystem
             Console.WriteLine("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
             
             Console.Write("\nПодтвердите оплату (да/нет): ");
-            string confirmation = Console.ReadLine()?.Trim().ToLower();
+            string confirmation = Console.ReadLine()?.Trim().ToLowerInvariant();
             
-            return (confirmation == "да" || confirmation == "yes" || confirmation == "y");
+            return (confirmation == "да" || confirmation == "yes" || confirmation == "y" || confirmation == "д");
         }
 
         static Purchase ExecuteTransaction(ZooService svc, Customer buyer, List<Ticket> items)
@@ -279,9 +279,9 @@ namespace ZooTicketSystem
             Console.WriteLine(document);
             
             Console.Write("\nСохранить подтверждение в файл? (да/нет): ");
-            string response = Console.ReadLine()?.Trim().ToLower();
+            string response = Console.ReadLine()?.Trim().ToLowerInvariant();
             
-            if (response == "да" || response == "yes" || response == "y")
+            if (response == "да" || response == "yes" || response == "y" || response == "д")
             {
                 Console.Write("Введите имя файла (или нажмите Enter для 'purchase_confirmation.txt'): ");
                 string filename = Console.ReadLine()?.Trim();
