@@ -9,7 +9,7 @@ namespace ZooTicketSystem.Models
         public List<Animal> Animals { get; set; }
         public int OpeningHour { get; set; }
         public int ClosingHour { get; set; }
-        public List<DayOfWeek> ClosedDays { get; set; }
+        public List<System.DayOfWeek> ClosedDays { get; set; }
 
         public Zoo(string name, int openingHour, int closingHour)
         {
@@ -37,7 +37,7 @@ namespace ZooTicketSystem.Models
             OpeningHour = openingHour;
             ClosingHour = closingHour;
             Animals = new List<Animal>();
-            ClosedDays = new List<DayOfWeek> { DayOfWeek.Monday };
+            ClosedDays = new List<System.DayOfWeek> { System.DayOfWeek.Monday };
         }
 
         public void AddAnimal(Animal animal)
@@ -52,37 +52,7 @@ namespace ZooTicketSystem.Models
 
         public bool IsOpenOnDay(DateTime date)
         {
-            DayOfWeek dayOfWeek = ConvertToDayOfWeek(date.DayOfWeek);
-            return !ClosedDays.Contains(dayOfWeek);
-        }
-
-        private DayOfWeek ConvertToDayOfWeek(System.DayOfWeek systemDayOfWeek)
-        {
-            if (systemDayOfWeek == System.DayOfWeek.Monday)
-            {
-                return DayOfWeek.Monday;
-            }
-            if (systemDayOfWeek == System.DayOfWeek.Tuesday)
-            {
-                return DayOfWeek.Tuesday;
-            }
-            if (systemDayOfWeek == System.DayOfWeek.Wednesday)
-            {
-                return DayOfWeek.Wednesday;
-            }
-            if (systemDayOfWeek == System.DayOfWeek.Thursday)
-            {
-                return DayOfWeek.Thursday;
-            }
-            if (systemDayOfWeek == System.DayOfWeek.Friday)
-            {
-                return DayOfWeek.Friday;
-            }
-            if (systemDayOfWeek == System.DayOfWeek.Saturday)
-            {
-                return DayOfWeek.Saturday;
-            }
-            return DayOfWeek.Sunday;
+            return !ClosedDays.Contains(date.DayOfWeek);
         }
 
         public bool IsWeekend(DateTime date)
@@ -91,5 +61,4 @@ namespace ZooTicketSystem.Models
                    date.DayOfWeek == System.DayOfWeek.Sunday;
         }
     }
-}
 

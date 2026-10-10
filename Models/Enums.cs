@@ -21,13 +21,4 @@ namespace ZooTicketSystem.Models
         Cancelled,  // Отменена
         Used        // Использована
     }
-
-    /// <summary>
-    /// День недели
-    /// </summary>
-    public enum DayOfWeek
-    {
-        Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday
-    }
 }
-
