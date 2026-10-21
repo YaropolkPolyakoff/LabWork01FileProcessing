@@ -9,6 +9,143 @@ namespace ZooTicketSystem.Utils
     /// </summary>
     public class ConsoleUI
     {
+        public void DisplayBanner()
+        {
+            Console.WriteLine("###############################################");
+            Console.WriteLine("#  Zoo Ticket Booking System v1.0           #");
+            Console.WriteLine("###############################################");
+            Console.WriteLine();
+        }
+
+        public void DisplayAnimalListHint(string animalListArgument)
+        {
+            if (string.IsNullOrEmpty(animalListArgument))
+            {
+                Console.WriteLine("──────────────────────────────────────────────");
+                Console.WriteLine("Совет: Вы можете выбрать список животных,");
+                Console.WriteLine("указав команду при запуске программы:");
+                Console.WriteLine("  • zoo - полный список животных зоопарка");
+                Console.WriteLine("  • default - базовый список (3 животных)");
+                Console.WriteLine();
+                Console.WriteLine("Пример: ZooTicketSystem.exe zoo");
+                Console.WriteLine("──────────────────────────────────────────────");
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine("Выбран список животных: " + animalListArgument);
+                Console.WriteLine();
+            }
+        }
+
+        public void DisplayZooInitHeader()
+        {
+            Console.WriteLine(">>> Шаг 1: Инициализация зоопарка");
+            Console.WriteLine();
+        }
+
+        public void DisplayAnimalCount(int count)
+        {
+            Console.WriteLine("Добавлено животных: " + count);
+            Console.WriteLine();
+        }
+
+        public void DisplayAnimalsInfo(string info)
+        {
+            Console.WriteLine(info);
+        }
+
+        public void DisplayCustomerStepHeader()
+        {
+            Console.WriteLine(">>> Шаг 2: Загрузка данных клиента");
+        }
+
+        public void DisplayCustomerInfo(string name, int age, string category)
+        {
+            Console.WriteLine($"\nКлиент: {name} [{age} лет] - {category}");
+        }
+
+        public void DisplayInvalidTicketChoice()
+        {
+            Console.WriteLine("Некорректный выбор. Попробуйте снова.");
+        }
+
+        public void DisplayNoTicketsChosen()
+        {
+            Console.WriteLine("Не выбрано ни одного билета. Завершение работы.");
+        }
+
+        public void DisplayPaymentCancelled()
+        {
+            Console.WriteLine("Оплата отменена пользователем.");
+        }
+
+        public void DisplayTransactionHeader()
+        {
+            Console.WriteLine("\n>>> Расчет стоимости");
+        }
+
+        public void DisplayTransactionId(string confirmationNumber)
+        {
+            Console.WriteLine("ID транзакции: " + confirmationNumber);
+        }
+
+        public void DisplayTransactionSuccess()
+        {
+            Console.WriteLine("Транзакция завершена успешно!");
+        }
+
+        public void DisplayOutputStepHeader()
+        {
+            Console.WriteLine(">>> Шаг 5: Генерация документа");
+        }
+
+        public void DisplayDocument(string document)
+        {
+            Console.WriteLine(document);
+        }
+
+        public void DisplayFileSaved(string filename)
+        {
+            Console.WriteLine("Документ сохранен: " + filename);
+        }
+
+        public void DisplayFileSaveError(string message)
+        {
+            Console.WriteLine("Ошибка при сохранении файла: " + message);
+        }
+
+        public void DisplayWorkDone()
+        {
+            Console.WriteLine("\n*** Работа завершена ***\n");
+        }
+
+        public void DisplayFileError(string message)
+        {
+            Console.WriteLine("\n!!! Файл отсутствует: " + message);
+        }
+
+        public void DisplayValidationError(string message)
+        {
+            Console.WriteLine("\n!!! Ошибка валидации: " + message);
+        }
+
+        public void DisplayBusinessError(string message)
+        {
+            Console.WriteLine("\n!!! Бизнес-ошибка: " + message);
+        }
+
+        public void DisplayCriticalError(string typeName, string message)
+        {
+            Console.WriteLine("\n!!! Критическая ошибка [" + typeName + "]: " + message);
+        }
+
+        public void PauseBeforeExit()
+        {
+            Console.WriteLine("\nДля выхода нажмите любую клавишу");
+            Console.ReadKey();
+        }
+
         public void DisplayStepHeader(string stepTitle)
         {
             Console.WriteLine($">>> {stepTitle}");
