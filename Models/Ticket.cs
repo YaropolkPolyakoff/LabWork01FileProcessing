@@ -5,9 +5,13 @@ namespace ZooTicketSystem.Models
     public class Ticket
     {
         public TicketType Type { get; set; }
+        public string Category { get; set; }
         public decimal BasePrice { get; set; }
+        public decimal Cost { get; set; }
         public DateTime PurchaseDate { get; set; }
+        public DateTime TimeNow { get; set; }
         public DateTime ValidDate { get; set; }
+        public DateTime ExpiryDate { get; set; }
         public PurchaseStatus Status { get; set; }
 
         public Ticket(TicketType type, decimal basePrice, DateTime purchaseDate, DateTime validDate)
@@ -23,10 +27,23 @@ namespace ZooTicketSystem.Models
             }
 
             Type = type;
+            Category = GetCategoryByType(type);
             BasePrice = basePrice;
+            Cost = basePrice;
             PurchaseDate = purchaseDate;
+            TimeNow = purchaseDate;
             ValidDate = validDate;
+            ExpiryDate = validDate;
             Status = PurchaseStatus.Pending;
+        }
+
+        public static string GetCategoryByType(TicketType type)
+        {
+            if (type == TicketType.Adult)   return "Взрослый";
+            if (type == TicketType.Child)   return "Детский";
+            if (type == TicketType.Student) return "Студенческий";
+            if (type == TicketType.Family)  return "Семейный";
+            return "Неизвестный";
         }
 
         public static decimal GetBasePriceByType(TicketType type)
