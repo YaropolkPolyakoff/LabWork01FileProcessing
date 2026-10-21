@@ -218,9 +218,8 @@ namespace ZooTicketSystem.Utils
             {
                 throw new FileNotFoundException("Файл с запросом на покупку не найден: " + filePath);
             }
-            using (StreamReader reader = new StreamReader(filePath, System.Text.Encoding.UTF8))
-            
-            // Используем StreamWriter для чтения файла
+            List<string> ticketTypes = new List<string>();
+            // Используем StreamReader для чтения файла
             using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
             using (StreamReader reader = new StreamReader(fs, new System.Text.UTF8Encoding(true)))
             {
@@ -251,14 +250,12 @@ namespace ZooTicketSystem.Utils
                     Directory.CreateDirectory(directory);
                 }
                 
-                File.WriteAllText(filePath, content, System.Text.Encoding.UTF8);
                 // Используем StreamWriter для записи в файл
                 using (FileStream fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 using (StreamWriter writer = new StreamWriter(fs, System.Text.Encoding.UTF8))
                 {
                     writer.Write(content);
                 }
-                
             }
             catch (Exception ex)
             {
@@ -282,7 +279,6 @@ namespace ZooTicketSystem.Utils
                 {
                     writer.WriteLine(content);
                 }
-                File.AppendAllText(filePath, content + Environment.NewLine, System.Text.Encoding.UTF8);
             }
             catch (Exception ex)
             {
