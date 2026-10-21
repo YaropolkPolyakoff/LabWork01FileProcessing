@@ -33,33 +33,13 @@ namespace ZooTicketSystem
                 animalListArgument = inputArguments[0];
             }
             
-            // Выводим подсказку по аргументам командной строки
-            if (string.IsNullOrEmpty(animalListArgument))
-            {
-                Console.WriteLine("──────────────────────────────────────────────");
-                Console.WriteLine("Совет: Вы можете выбрать список животных,");
-                Console.WriteLine("указав команду при запуске программы:");
-                Console.WriteLine("  • zoo - полный список животных зоопарка");
-                Console.WriteLine("  • default - базовый список (3 животных)");
-                Console.WriteLine();
-                Console.WriteLine("Пример: ZooTicketSystem.exe zoo");
-                Console.WriteLine("──────────────────────────────────────────────");
-                Console.WriteLine();
-            }
-            else
-            {
-                Console.WriteLine("Выбран список животных: " + animalListArgument);
-                Console.WriteLine();
-            }
-            Console.WriteLine("###############################################");
-            Console.WriteLine("#  Zoo Ticket Booking System v1.0           #");
-            Console.WriteLine("###############################################");
-            Console.WriteLine();
+            consoleUI.DisplayStartupHint(animalListArgument);
+            consoleUI.DisplayAppHeader();
 
             try
             {
                 ExecuteInteractiveZooBookingSystem();
-                Console.WriteLine("\n*** Работа завершена ***\n");
+                consoleUI.DisplayWorkCompleted();
             }
             catch (FileNotFoundException errorInfo)
             {
@@ -75,10 +55,10 @@ namespace ZooTicketSystem
             }
             catch (Exception errorInfo)
             {
-                DisplayCriticalError(errorInfo);
+                consoleUI.DisplayCriticalError(errorInfo.GetType().Name, errorInfo.Message);
             }
 
-            PauseBeforeExit();
+            consoleUI.DisplayPauseBeforeExit();
         }
 
         static void ExecuteInteractiveZooBookingSystem()
@@ -91,7 +71,7 @@ namespace ZooTicketSystem
             
             if (orderedTickets.Count == 0)
             {
-                Console.WriteLine("Не выбрано ни одного билета. Завершение работы.");
+                consoleUI.DisplayNoTicketsSelected();
                 return;
             }
             
@@ -99,19 +79,18 @@ namespace ZooTicketSystem
             
             if (!ConfirmPayment(transaction))
             {
-                Console.WriteLine("Оплата отменена пользователем.");
+                consoleUI.DisplayPaymentCancelled();
                 return;
             }
             
             mainService.ConfirmPurchase(transaction);
-            Console.WriteLine("Транзакция завершена успешно!");
+            consoleUI.DisplayTransactionSuccess();
             OutputResults(mainService, transaction);
         }
 
         static void SetupZoo(ZooService svc)
         {
-            Console.WriteLine(">>> Шаг 1: Инициализация зоопарка");
-            Console.WriteLine();
+            consoleUI.DisplayStepHeader("Шаг 1: Инициализация зоопарка");
             
             // Загружаем животных по простому аргументу (не требуем путь к файлу)
             List<Animal> animalList = FileHelper.LoadAnimalsByType(animalListArgument);
@@ -123,18 +102,17 @@ namespace ZooTicketSystem
                 facility.AddAnimal(animal);
             }
             
-            Console.WriteLine("Добавлено животных: " + animalList.Count);
-            Console.WriteLine();
+            consoleUI.DisplayAnimalsLoaded(animalList.Count);
             
             if (animalList.Count > 0)
             {
-                Console.WriteLine(svc.GetAnimalsInfo());
+                consoleUI.DisplayAnimalsInfo(svc.GetAnimalsInfo());
             }
         }
 
         static Customer GetCustomerFromConsole()
         {
-            Console.WriteLine(">>> Шаг 2: Загрузка данных клиента");
+            consoleUI.DisplayStepHeader("Шаг 2: Загрузка данных клиента");
             
             string name = inputReader.ReadNonEmptyLine(
                 "Введите ваше имя: ",
@@ -159,7 +137,7 @@ namespace ZooTicketSystem
                 category = "Студент";
             else
                 category = "Взрослый";
-            Console.WriteLine($"\nКлиент: {person.Name} [{person.Age} лет] - {category}");
+            consoleUI.DisplayCustomerInfo(person.Name, person.Age, category);
             return person;
         }
 
@@ -188,7 +166,7 @@ namespace ZooTicketSystem
                 }
                 else
                 {
-                    Console.WriteLine("Некорректный выбор. Попробуйте снова.");
+                    consoleUI.DisplayInvalidTicketChoice();
                 }
             }
             
@@ -208,17 +186,16 @@ namespace ZooTicketSystem
 
         static Purchase ExecuteTransaction(ZooService svc, Customer buyer, List<Ticket> items)
         {
-            Console.WriteLine("\n>>> Расчет стоимости");
             Purchase order = svc.CreatePurchase(buyer, items, DateTime.Now);
-            Console.WriteLine("ID транзакции: " + order.ConfirmationNumber);
+            consoleUI.DisplayTransactionHeader(order.ConfirmationNumber);
             return order;
         }
 
         static void OutputResults(ZooService svc, Purchase order)
         {
-            Console.WriteLine(">>> Шаг 5: Генерация документа");
+            consoleUI.DisplayResultsHeader();
             string document = svc.GeneratePurchaseConfirmation(order);
-            Console.WriteLine(document);
+            consoleUI.DisplayDocument(document);
             
             string response = inputReader.ReadOptionalLine(
                 "\nСохранить подтверждение в файл? (да/нет): ");
@@ -236,39 +213,28 @@ namespace ZooTicketSystem
                 try
                 {
                     FileHelper.WriteOutputToFile(filename, document);
-                    Console.WriteLine("Документ сохранен: " + filename);
+                    consoleUI.DisplayFileSaved(filename);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Ошибка при сохранении файла: " + ex.Message);
+                    consoleUI.DisplayFileSaveError(ex.Message);
                 }
             }
         }
 
         static void DisplayFileError(FileNotFoundException e) 
         { 
-            Console.WriteLine("\n!!! Файл отсутствует: " + e.Message); 
+            consoleUI.DisplayFileError(e.Message);
         }
         
         static void DisplayValidationError(ArgumentException e) 
         { 
-            Console.WriteLine("\n!!! Ошибка валидации: " + e.Message); 
+            consoleUI.DisplayValidationError(e.Message);
         }
         
         static void DisplayBusinessError(InvalidOperationException e) 
         { 
-            Console.WriteLine("\n!!! Бизнес-ошибка: " + e.Message); 
-        }
-        
-        static void DisplayCriticalError(Exception e) 
-        { 
-            Console.WriteLine("\n!!! Критическая ошибка [" + e.GetType().Name + "]: " + e.Message); 
-        }
-        
-        static void PauseBeforeExit() 
-        { 
-            Console.WriteLine("\nДля выхода нажмите любую клавишу"); 
-            Console.ReadKey(); 
+            consoleUI.DisplayBusinessError(e.Message);
         }
     }
 }
