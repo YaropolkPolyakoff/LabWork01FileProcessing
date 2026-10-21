@@ -116,9 +116,8 @@ namespace ZooTicketSystem.Services
         /// Метод-координатор: оркеструет вызовы атомарных методов
         /// </summary>
         /// <param name="purchase">Покупка</param>
-        /// <param name="zoo">Зоопарк</param>
         /// <returns>Итоговая сумма покупки</returns>
-        public decimal CalculateTotalPrice(Purchase purchase, Zoo zoo)
+        public decimal CalculateTotalPrice(Purchase purchase)
         {
             if (purchase == null)
             {

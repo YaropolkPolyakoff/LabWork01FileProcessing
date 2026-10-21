@@ -84,11 +84,10 @@ namespace ZooTicketSystem
         static void ExecuteInteractiveZooBookingSystem()
         {
             ZooService mainService = new ZooService();
-            ValidationService validationEngine = new ValidationService();
 
             SetupZoo(mainService);
             Customer buyer = GetCustomerFromConsole();
-            List<Ticket> orderedTickets = SelectTicketsInteractively(validationEngine);
+            List<Ticket> orderedTickets = SelectTicketsInteractively();
             
             if (orderedTickets.Count == 0)
             {
@@ -164,7 +163,7 @@ namespace ZooTicketSystem
             return person;
         }
 
-        static List<Ticket> SelectTicketsInteractively(ValidationService validator)
+        static List<Ticket> SelectTicketsInteractively()
         {
             consoleUI.DisplayStepHeader("Шаг 3: Формирование билетов");
             consoleUI.DisplayTicketOptions();
