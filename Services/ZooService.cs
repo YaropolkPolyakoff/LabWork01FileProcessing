@@ -53,7 +53,7 @@ namespace ZooTicketSystem.Services
             
             Purchase purchase = new Purchase(customer, tickets, purchaseDate, confirmationNumber);
             
-            decimal totalPrice = pricingService.CalculateTotalPrice(purchase, zoo);
+            decimal totalPrice = pricingService.CalculateTotalPrice(purchase);
             purchase.TotalAmount = totalPrice;
             
             return purchase;
