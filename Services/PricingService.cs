@@ -99,17 +99,6 @@ namespace ZooTicketSystem.Services
         }
 
         /// <summary>
-        /// Применяет оптовый коэффициент (групповую скидку) к промежуточной сумме
-        /// </summary>
-        /// <param name="subtotal">Промежуточная сумма</param>
-        /// <param name="ticketCount">Количество билетов</param>
-        /// <returns>Сумма с учетом оптового коэффициента</returns>
-        private decimal ApplyBulkDiscount(decimal subtotal, int ticketCount)
-        {
-            return CalculateGroupDiscount(subtotal, ticketCount);
-        }
-
-        /// <summary>
         /// Валидирует итоговую цену
         /// </summary>
         /// <param name="totalPrice">Итоговая цена для проверки</param>
@@ -140,7 +129,7 @@ namespace ZooTicketSystem.Services
             decimal subtotal = CalculateSubtotal(purchase);
             
             // Шаг 2: Применяем оптовый коэффициент (групповую скидку)
-            decimal totalPrice = ApplyBulkDiscount(subtotal, purchase.Tickets.Count);
+            decimal totalPrice = CalculateGroupDiscount(subtotal, purchase.Tickets.Count);
             
             // Шаг 3: Валидируем итоговую цену
             ValidateTotalPrice(totalPrice);

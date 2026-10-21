@@ -33,13 +33,33 @@ namespace ZooTicketSystem
                 animalListArgument = inputArguments[0];
             }
             
-            WriteUsageInfo();
-            WriteHeader();
+            // Выводим подсказку по аргументам командной строки
+            if (string.IsNullOrEmpty(animalListArgument))
+            {
+                Console.WriteLine("──────────────────────────────────────────────");
+                Console.WriteLine("Совет: Вы можете выбрать список животных,");
+                Console.WriteLine("указав команду при запуске программы:");
+                Console.WriteLine("  • zoo - полный список животных зоопарка");
+                Console.WriteLine("  • default - базовый список (3 животных)");
+                Console.WriteLine();
+                Console.WriteLine("Пример: ZooTicketSystem.exe zoo");
+                Console.WriteLine("──────────────────────────────────────────────");
+                Console.WriteLine();
+            }
+            else
+            {
+                Console.WriteLine("Выбран список животных: " + animalListArgument);
+                Console.WriteLine();
+            }
+            Console.WriteLine("###############################################");
+            Console.WriteLine("#  Zoo Ticket Booking System v1.0           #");
+            Console.WriteLine("###############################################");
+            Console.WriteLine();
 
             try
             {
                 ExecuteInteractiveZooBookingSystem();
-                WriteFooter();
+                Console.WriteLine("\n*** Работа завершена ***\n");
             }
             catch (FileNotFoundException errorInfo)
             {
@@ -59,35 +79,6 @@ namespace ZooTicketSystem
             }
 
             PauseBeforeExit();
-        }
-
-        static void WriteUsageInfo()
-        {
-            if (string.IsNullOrEmpty(animalListArgument))
-            {
-                Console.WriteLine("──────────────────────────────────────────────");
-                Console.WriteLine("Совет: Вы можете выбрать список животных,");
-                Console.WriteLine("указав команду при запуске программы:");
-                Console.WriteLine("  • zoo - полный список животных зоопарка");
-                Console.WriteLine("  • default - базовый список (3 животных)");
-                Console.WriteLine();
-                Console.WriteLine("Пример: ZooTicketSystem.exe zoo");
-                Console.WriteLine("──────────────────────────────────────────────");
-                Console.WriteLine();
-            }
-            else
-            {
-                Console.WriteLine("Выбран список животных: " + animalListArgument);
-                Console.WriteLine();
-            }
-        }
-        
-        static void WriteHeader()
-        {
-            Console.WriteLine("###############################################");
-            Console.WriteLine("#  Zoo Ticket Booking System v1.0           #");
-            Console.WriteLine("###############################################");
-            Console.WriteLine();
         }
 
         static void ExecuteInteractiveZooBookingSystem()
@@ -162,7 +153,14 @@ namespace ZooTicketSystem
                 "Введите ваш телефон (или нажмите Enter для пропуска): ");
             
             Customer person = new Customer(name, age, email, phone);
-            Console.WriteLine($"\nКлиент: {person.Name} [{person.Age} лет] - {person.GetCategory()}");
+            string category;
+            if (person.Age < 12)
+                category = "Ребенок";
+            else if (person.Age <= 18)
+                category = "Студент";
+            else
+                category = "Взрослый";
+            Console.WriteLine($"\nКлиент: {person.Name} [{person.Age} лет] - {category}");
             return person;
         }
 
@@ -250,11 +248,6 @@ namespace ZooTicketSystem
             }
         }
 
-        static void WriteFooter() 
-        { 
-            Console.WriteLine("\n*** Работа завершена ***\n"); 
-        }
-        
         static void DisplayFileError(FileNotFoundException e) 
         { 
             Console.WriteLine("\n!!! Файл отсутствует: " + e.Message); 

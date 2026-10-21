@@ -40,26 +40,6 @@ namespace ZooTicketSystem.Models
             Email = email;
             Phone = phone ?? "Не указан";
         }
-
-        /// <summary>
-        /// Определяет категорию покупателя для скидок
-        /// </summary>
-        public string GetCategory()
-        {
-            // Бизнес-правило 1: Дети (до 12 лет) - 50% скидка
-            if (Age < 12)
-            {
-                return "Ребенок";
-            }
-            
-            // Бизнес-правило 2: Студенты (12-18 лет) - 30% скидка
-            if (Age >= 12 && Age <= 18)
-            {
-                return "Студент";
-            }
-            
-            return "Взрослый";
-        }
     }
 }
 
