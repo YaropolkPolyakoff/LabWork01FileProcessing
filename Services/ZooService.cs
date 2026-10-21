@@ -58,6 +58,14 @@ namespace ZooTicketSystem.Services
             
             return purchase;
         }
+        public Ticket CreateTicket(TicketType type)
+        {
+            DateTime issueDate = DateTime.Now;
+            DateTime expiryDate = issueDate.AddDays(7);
+            decimal price = Ticket.GetBasePriceByType(type);
+            return new Ticket(type, price, issueDate, expiryDate);
+        }
+
 
         public void ConfirmPurchase(Purchase purchase)
         {

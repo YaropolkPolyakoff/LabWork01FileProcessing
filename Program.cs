@@ -87,7 +87,7 @@ namespace ZooTicketSystem
 
             SetupZoo(mainService);
             Customer buyer = GetCustomerFromConsole();
-            List<Ticket> orderedTickets = SelectTicketsInteractively();
+            List<Ticket> orderedTickets = SelectTicketsInteractively(mainService);
             
             if (orderedTickets.Count == 0)
             {
@@ -163,14 +163,12 @@ namespace ZooTicketSystem
             return person;
         }
 
-        static List<Ticket> SelectTicketsInteractively()
+        static List<Ticket> SelectTicketsInteractively(ZooService zooService)
         {
             consoleUI.DisplayStepHeader("Шаг 3: Формирование билетов");
             consoleUI.DisplayTicketOptions();
             
             List<Ticket> resultTickets = new List<Ticket>();
-            DateTime currentDateTime = DateTime.Now;
-            DateTime ticketValidDate = currentDateTime.AddDays(7);
             
             while (true)
             {
@@ -184,9 +182,9 @@ namespace ZooTicketSystem
                 
                 if (inputParser.TryParseTicketTypeChoice(input, out TicketType selectedType))
                 {
-                    decimal priceAmount = Ticket.GetBasePriceByType(selectedType);
-                    resultTickets.Add(new Ticket(selectedType, priceAmount, currentDateTime, ticketValidDate));
-                    consoleUI.DisplayTicketAdded(selectedType, priceAmount);
+                    Ticket ticket = zooService.CreateTicket(selectedType);
+                    resultTickets.Add(ticket);
+                    consoleUI.DisplayTicketAdded(ticket.Type, ticket.BasePrice);
                 }
                 else
                 {
