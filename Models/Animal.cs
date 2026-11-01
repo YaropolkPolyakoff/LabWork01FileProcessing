@@ -7,11 +7,11 @@ namespace ZooTicketSystem.Models
     /// </summary>
     public class Animal
     {
-        public string Name { get; set; }
-        public string Species { get; set; }
-        public string Habitat { get; set; }
-        public string Description { get; set; }
-        public int Age { get; set; }
+        public string Name { get; private set; }
+        public string Species { get; private set; }
+        public string Habitat { get; private set; }
+        public string Description { get; private set; }
+        public int Age { get; private set; }
 
         public Animal(string name, string species, string habitat, string description, int age)
         {
