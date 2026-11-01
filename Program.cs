@@ -1,249 +1,69 @@
 using System;
-using System.Collections.Generic;
 using ZooTicketSystem.Models;
 using ZooTicketSystem.Services;
 using ZooTicketSystem.Utils;
 
 namespace ZooTicketSystem
 {
+    /// <summary>
+    /// Точка входа приложения.
+    /// Единственная ответственность: инициализация окружения, запуск сценария
+    /// и обработка необработанных исключений верхнего уровня.
+    /// </summary>
     class Program
     {
-        // Сохраняем аргумент для списка животных
-        private static string animalListArgument = "";
-        private static ConsoleUI consoleUI = new ConsoleUI();
-        private static InputParser inputParser = new InputParser();
-        private static InputReader inputReader = new InputReader(new InputParser());
-        
         static void Main(string[] inputArguments)
         {
-            // Установка кодировки консоли для правильного отображения кириллицы
+            // Инициализация кодировки консоли для правильного отображения кириллицы
             try
             {
                 Console.OutputEncoding = System.Text.Encoding.UTF8;
                 Console.InputEncoding = System.Text.Encoding.UTF8;
             }
-            catch 
-            { 
-                /* Игнорируем ошибки установки кодировки на некоторых системах */ 
-            }
-            
-            // Читаем аргумент для выбора списка животных
-            if (inputArguments != null && inputArguments.Length > 0)
+            catch
             {
-                animalListArgument = inputArguments[0];
+                /* Игнорируем ошибки установки кодировки на некоторых системах */
             }
-            
-            // Выводим подсказку по аргументам командной строки и баннер
+
+            string animalListArgument = (inputArguments != null && inputArguments.Length > 0)
+                ? inputArguments[0]
+                : "";
+
+            ConsoleUI consoleUI = new ConsoleUI();
+            InputParser inputParser = new InputParser();
+            InputReader inputReader = new InputReader(new InputParser());
+
             consoleUI.DisplayArgumentHint(animalListArgument);
             consoleUI.DisplayWelcomeBanner();
 
+            BookingOrchestrator orchestrator = new BookingOrchestrator(
+                animalListArgument,
+                consoleUI,
+                inputParser,
+                inputReader);
+
             try
             {
-                ExecuteInteractiveZooBookingSystem();
+                orchestrator.Run();
                 consoleUI.DisplayWorkCompleted();
             }
             catch (FileNotFoundException errorInfo)
             {
-                DisplayFileError(errorInfo);
+                consoleUI.DisplayFileError(errorInfo.Message);
             }
             catch (ArgumentException errorInfo)
             {
-                DisplayValidationError(errorInfo);
+                consoleUI.DisplayValidationError(errorInfo.Message);
             }
             catch (InvalidOperationException errorInfo)
             {
-                DisplayBusinessError(errorInfo);
+                consoleUI.DisplayBusinessError(errorInfo.Message);
             }
             catch (Exception errorInfo)
             {
-                DisplayCriticalError(errorInfo);
+                consoleUI.DisplayCriticalError(errorInfo.GetType().Name, errorInfo.Message);
             }
 
-            PauseBeforeExit();
-        }
-
-        static void ExecuteInteractiveZooBookingSystem()
-        {
-            ZooService mainService = new ZooService();
-
-            SetupZoo(mainService);
-            Customer buyer = GetCustomerFromConsole();
-            List<Ticket> orderedTickets = SelectTicketsInteractively(mainService);
-            
-            if (orderedTickets.Count == 0)
-            {
-                consoleUI.DisplayNoTicketsSelected();
-                return;
-            }
-            
-            Purchase transaction = ExecuteTransaction(mainService, buyer, orderedTickets);
-            
-            if (!ConfirmPayment(transaction))
-            {
-                consoleUI.DisplayPaymentCancelled();
-                return;
-            }
-            
-            mainService.ConfirmPurchase(transaction);
-            consoleUI.DisplayTransactionSuccess();
-            OutputResults(mainService, transaction);
-        }
-
-        static void SetupZoo(ZooService svc)
-        {
-            consoleUI.DisplayZooSetupHeader();
-            // Загружаем животных по простому аргументу (не требуем путь к файлу)
-            List<Animal> animalList = FileHelper.LoadAnimalsByType(animalListArgument);
-            
-            Zoo facility = svc.GetZoo();
-            
-            foreach (Animal animal in animalList)
-            {
-                facility.AddAnimal(animal);
-            }
-            
-            consoleUI.DisplayAnimalsAdded(animalList.Count);
-
-            if (animalList.Count > 0)
-            {
-                consoleUI.DisplayAnimalsInfo(svc.GetAnimalsInfo());
-            }
-        }
-
-        static Customer GetCustomerFromConsole()
-        {
-            consoleUI.DisplayCustomerHeader();
-            string name = inputReader.ReadNonEmptyLine(
-                "Введите ваше имя: ",
-                "Имя не может быть пустым. Введите ваше имя: ");
-            
-            int age = inputReader.ReadPositiveInteger(
-                "Введите ваш возраст: ",
-                "Введите корректный возраст (положительное число): ");
-            
-            string email = inputReader.ReadEmail(
-                "Введите ваш email: ",
-                "Введите корректный email: ");
-            
-            string phone = inputReader.ReadOptionalLine(
-                "Введите ваш телефон (или нажмите Enter для пропуска): ");
-            
-            Customer person = new Customer(name, age, email, phone);
-            string category;
-            if (person.Age < 12)
-                category = "Ребенок";
-            else if (person.Age <= 18)
-                category = "Студент";
-            else
-                category = "Взрослый";
-            consoleUI.DisplayCustomerCategory(person, category);
-            return person;
-        }
-
-        static List<Ticket> SelectTicketsInteractively(ZooService zooService)
-        {
-            consoleUI.DisplayStepHeader("Шаг 3: Формирование билетов");
-            consoleUI.DisplayTicketOptions();
-            
-            List<Ticket> resultTickets = new List<Ticket>();
-            
-            while (true)
-            {
-                string input = inputReader.ReadOptionalLine(
-                    "\nВыберите тип билета (1-4) или 0 для завершения: ");
-                
-                if (input == "0")
-                {
-                    break;
-                }
-                
-                if (inputParser.TryParseTicketTypeChoice(input, out TicketType selectedType))
-                {
-                    Ticket ticket = zooService.CreateTicket(selectedType);
-                    resultTickets.Add(ticket);
-                    consoleUI.DisplayTicketAdded(ticket.Type, ticket.BasePrice);
-                }
-                else
-                {
-                    consoleUI.DisplayInvalidTicketChoice();
-                }
-            }
-            
-            consoleUI.DisplayTicketsCount(resultTickets.Count);
-            return resultTickets;
-        }
-
-        static bool ConfirmPayment(Purchase order)
-        {
-            consoleUI.DisplayOrderSummary(order);
-            
-            string confirmation = inputReader.ReadOptionalLine(
-                "\nПодтвердите оплату (да/нет): ");
-            
-            return inputParser.ParseYesNoConfirmation(confirmation);
-        }
-
-        static Purchase ExecuteTransaction(ZooService svc, Customer buyer, List<Ticket> items)
-        {
-            consoleUI.DisplayTransactionHeader();
-            Purchase order = svc.CreatePurchase(buyer, items, DateTime.Now);
-            consoleUI.DisplayTransactionId(order.ConfirmationNumber);
-            return order;
-        }
-
-        static void OutputResults(ZooService svc, Purchase order)
-        {
-            consoleUI.DisplayOutputHeader();
-            string document = svc.GeneratePurchaseConfirmation(order);
-            consoleUI.DisplayDocument(document);
-            
-            string response = inputReader.ReadOptionalLine(
-                "\nСохранить подтверждение в файл? (да/нет): ");
-            
-            if (inputParser.ParseYesNoConfirmation(response))
-            {
-                string filename = inputReader.ReadOptionalLine(
-                    "Введите имя файла (или нажмите Enter для 'purchase_confirmation.txt'): ");
-                
-                if (string.IsNullOrEmpty(filename))
-                {
-                    filename = "purchase_confirmation.txt";
-                }
-                
-                try
-                {
-                    FileHelper.WriteOutputToFile(filename, document);
-                    consoleUI.DisplayFileSaved(filename);
-                }
-                catch (Exception ex)
-                {
-                    consoleUI.DisplayFileSaveError(ex.Message);
-                }
-            }
-        }
-
-        static void DisplayFileError(FileNotFoundException e) 
-        { 
-            consoleUI.DisplayFileError(e.Message);
-        }
-        
-        static void DisplayValidationError(ArgumentException e) 
-        { 
-            consoleUI.DisplayValidationError(e.Message);
-        }
-        
-        static void DisplayBusinessError(InvalidOperationException e) 
-        { 
-            consoleUI.DisplayBusinessError(e.Message);
-        }
-        
-        static void DisplayCriticalError(Exception e) 
-        { 
-            consoleUI.DisplayCriticalError(e.GetType().Name, e.Message);
-        }
-        
-        static void PauseBeforeExit() 
-        { 
             consoleUI.PauseBeforeExit();
         }
     }

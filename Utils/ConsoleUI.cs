@@ -124,6 +124,19 @@ namespace ZooTicketSystem.Utils
             Console.WriteLine(">>> Шаг 2: Загрузка данных клиента");
         }
 
+        /// <summary>
+        /// Возвращает отображаемое название категории клиента на основе возраста.
+        /// Логика отображения категорий хранится здесь, так как она относится к представлению данных.
+        /// </summary>
+        public string GetCustomerCategory(Customer person)
+        {
+            if (person.Age < 12)
+                return "Ребенок";
+            if (person.Age <= 18)
+                return "Студент";
+            return "Взрослый";
+        }
+
         public void DisplayCustomerCategory(Customer person, string category)
         {
             Console.WriteLine($"\nКлиент: {person.Name} [{person.Age} лет] - {category}");
