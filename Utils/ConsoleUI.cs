@@ -125,16 +125,11 @@ namespace ZooTicketSystem.Utils
         }
 
         /// <summary>
-        /// Возвращает отображаемое название категории клиента на основе возраста.
-        /// Логика отображения категорий хранится здесь, так как она относится к представлению данных.
+        /// Возвращает социальную категорию клиента, делегируя определение самому объекту Customer.
         /// </summary>
         public string GetCustomerCategory(Customer person)
         {
-            if (person.Age < 12)
-                return "Ребенок";
-            if (person.Age <= 18)
-                return "Студент";
-            return "Взрослый";
+            return person.GetAgeCategory();
         }
 
         public void DisplayCustomerCategory(Customer person, string category)
