@@ -242,6 +242,16 @@ namespace ZooTicketSystem.Utils
 
         public static void WriteOutputToFile(string filePath, string content)
         {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException("Путь к файлу не может быть null, пустым или состоять только из пробелов.", nameof(filePath));
+            }
+
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content), "Содержимое для записи не может быть null.");
+            }
+
             try
             {
                 string directory = Path.GetDirectoryName(filePath);
@@ -266,6 +276,16 @@ namespace ZooTicketSystem.Utils
 
         public static void AppendToOutputFile(string filePath, string content)
         {
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException("Путь к файлу не может быть null, пустым или состоять только из пробелов.", nameof(filePath));
+            }
+
+            if (content == null)
+            {
+                throw new ArgumentNullException(nameof(content), "Содержимое для добавления не может быть null.");
+            }
+
             try
             {
                 string directory = Path.GetDirectoryName(filePath);
