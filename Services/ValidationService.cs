@@ -6,7 +6,7 @@ namespace ZooTicketSystem.Services
 {
     public class ValidationService
     {
-        public void ValidatePurchaseRequest(Customer customer, List<Ticket> tickets, DateTime purchaseDate, Zoo zoo)
+        public void ValidatePurchaseRequest(Customer customer, List<Ticket> tickets, DateTime purchaseDate)
         {
             if (customer == null)
             {
@@ -21,11 +21,6 @@ namespace ZooTicketSystem.Services
             if (tickets.Count > 10)
             {
                 throw new ArgumentException("Превышено максимальное количество билетов (10) за одну покупку");
-            }
-            
-            if (!zoo.IsOpenOnDay(purchaseDate))
-            {
-                throw new InvalidOperationException("Зоопарк закрыт в понедельники. Выберите другой день.");
             }
             
             int idx = 0;

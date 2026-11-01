@@ -47,8 +47,13 @@ namespace ZooTicketSystem.Services
 
         public Purchase CreatePurchase(Customer customer, List<Ticket> tickets, DateTime purchaseDate)
         {
-            validationService.ValidatePurchaseRequest(customer, tickets, purchaseDate, zoo);
-            
+            if (!zoo.IsOpenOnDay(purchaseDate))
+            {
+                throw new InvalidOperationException("Зоопарк закрыт в понедельники. Выберите другой день.");
+            }
+
+            validationService.ValidatePurchaseRequest(customer, tickets, purchaseDate);
+
             string confirmationNumber = Purchase.GenerateConfirmationNumber();
             
             Purchase purchase = new Purchase(customer, tickets, purchaseDate, confirmationNumber);
