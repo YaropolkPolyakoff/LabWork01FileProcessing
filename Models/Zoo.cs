@@ -5,11 +5,11 @@ namespace ZooTicketSystem.Models
 {
     public class Zoo
     {
-        public string Name { get; set; }
-        public List<Animal> Animals { get; set; }
-        public int OpeningHour { get; set; }
-        public int ClosingHour { get; set; }
-        public List<System.DayOfWeek> ClosedDays { get; set; }
+        public string Name { get; private set; }
+        public List<Animal> Animals { get; private set; }
+        public int OpeningHour { get; private set; }
+        public int ClosingHour { get; private set; }
+        public List<System.DayOfWeek> ClosedDays { get; private set; }
 
         public Zoo(string name, int openingHour, int closingHour)
         {
