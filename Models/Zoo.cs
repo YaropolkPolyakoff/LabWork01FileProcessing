@@ -6,10 +6,12 @@ namespace ZooTicketSystem.Models
     public class Zoo
     {
         public string Name { get; private set; }
-        public List<Animal> Animals { get; private set; }
+        private readonly List<Animal> _animals;
+        public IReadOnlyList<Animal> Animals => _animals;
         public int OpeningHour { get; private set; }
         public int ClosingHour { get; private set; }
-        public List<System.DayOfWeek> ClosedDays { get; private set; }
+        private readonly List<System.DayOfWeek> _closedDays;
+        public IReadOnlyList<System.DayOfWeek> ClosedDays => _closedDays;
 
         public Zoo(string name, int openingHour, int closingHour)
         {
@@ -36,8 +38,8 @@ namespace ZooTicketSystem.Models
             Name = name;
             OpeningHour = openingHour;
             ClosingHour = closingHour;
-            Animals = new List<Animal>();
-            ClosedDays = new List<System.DayOfWeek> { System.DayOfWeek.Monday };
+            _animals = new List<Animal>();
+            _closedDays = new List<System.DayOfWeek> { System.DayOfWeek.Monday };
         }
 
         public void AddAnimal(Animal animal)
@@ -47,12 +49,12 @@ namespace ZooTicketSystem.Models
                 throw new ArgumentException("Животное не может быть null");
             }
             
-            Animals.Add(animal);
+            _animals.Add(animal);
         }
 
         public bool IsOpenOnDay(DateTime date)
         {
-            return !ClosedDays.Contains(date.DayOfWeek);
+            return !_closedDays.Contains(date.DayOfWeek);
         }
 
         public bool IsWeekend(DateTime date)
