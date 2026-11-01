@@ -40,6 +40,19 @@ namespace ZooTicketSystem.Models
             Email = email;
             Phone = phone ?? "Не указан";
         }
+
+        /// <summary>
+        /// Возвращает социальную категорию клиента на основе его возраста.
+        /// Определение возрастной категории — исключительная обязанность сущности Customer.
+        /// </summary>
+        public string GetAgeCategory()
+        {
+            if (Age < 12)
+                return "Ребенок";
+            if (Age <= 18)
+                return "Студент";
+            return "Взрослый";
+        }
     }
 }
 
