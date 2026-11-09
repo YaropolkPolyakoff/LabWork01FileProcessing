@@ -14,6 +14,7 @@ namespace ZooTicketSystem.Services
         private readonly string _animalListArgument;
         private readonly IZooService _zooService;
         private readonly ConsoleUI _consoleUI;
+        private readonly IReportGenerator _reportGenerator;
         private readonly InputParser _inputParser;
         private readonly InputReader _inputReader;
 
@@ -21,12 +22,14 @@ namespace ZooTicketSystem.Services
             string animalListArgument,
             IZooService zooService,
             ConsoleUI consoleUI,
+            IReportGenerator reportGenerator,
             InputParser inputParser,
             InputReader inputReader)
         {
             _animalListArgument = animalListArgument;
             _zooService = zooService ?? throw new ArgumentNullException(nameof(zooService));
             _consoleUI = consoleUI;
+            _reportGenerator = reportGenerator ?? throw new ArgumentNullException(nameof(reportGenerator));
             _inputParser = inputParser;
             _inputReader = inputReader;
         }
@@ -156,7 +159,7 @@ namespace ZooTicketSystem.Services
         private void OutputResults(IZooService svc, Purchase order)
         {
             _consoleUI.DisplayOutputHeader();
-            string document = svc.GeneratePurchaseConfirmation(order);
+            string document = _reportGenerator.GeneratePurchaseConfirmation(order);
             _consoleUI.DisplayDocument(document);
 
             string response = _inputReader.ReadOptionalLine(

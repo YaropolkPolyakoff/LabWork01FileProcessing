@@ -34,10 +34,5 @@ namespace ZooTicketSystem.Services
         /// Подтверждает покупку, переводя её в статус оплачена.
         /// </summary>
         void ConfirmPurchase(Purchase purchase);
-
-        /// <summary>
-        /// Генерирует текстовое подтверждение покупки.
-        /// </summary>
-        string GeneratePurchaseConfirmation(Purchase purchase);
     }
 }
