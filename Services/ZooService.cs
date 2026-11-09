@@ -5,17 +5,17 @@ using ZooTicketSystem.Models;
 
 namespace ZooTicketSystem.Services
 {
-    public class ZooService
+    public class ZooService : IZooService
     {
         private Zoo zoo;
-        private PricingService pricingService;
-        private ValidationService validationService;
+        private readonly IPricingService pricingService;
+        private readonly IValidationService validationService;
 
-        public ZooService()
+        public ZooService(IPricingService pricingService, IValidationService validationService)
         {
             zoo = new Zoo("Центральный зоопарк", 9, 18);
-            pricingService = new PricingService();
-            validationService = new ValidationService();
+            this.pricingService = pricingService ?? throw new ArgumentNullException(nameof(pricingService));
+            this.validationService = validationService ?? throw new ArgumentNullException(nameof(validationService));
         }
 
         public Zoo GetZoo()

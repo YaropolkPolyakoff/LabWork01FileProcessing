@@ -12,17 +12,20 @@ namespace ZooTicketSystem.Services
     public class BookingOrchestrator
     {
         private readonly string _animalListArgument;
+        private readonly IZooService _zooService;
         private readonly ConsoleUI _consoleUI;
         private readonly InputParser _inputParser;
         private readonly InputReader _inputReader;
 
         public BookingOrchestrator(
             string animalListArgument,
+            IZooService zooService,
             ConsoleUI consoleUI,
             InputParser inputParser,
             InputReader inputReader)
         {
             _animalListArgument = animalListArgument;
+            _zooService = zooService ?? throw new ArgumentNullException(nameof(zooService));
             _consoleUI = consoleUI;
             _inputParser = inputParser;
             _inputReader = inputReader;
@@ -33,11 +36,9 @@ namespace ZooTicketSystem.Services
         /// </summary>
         public void Run()
         {
-            ZooService mainService = new ZooService();
-
-            SetupZoo(mainService);
+            SetupZoo(_zooService);
             Customer buyer = GetCustomerFromConsole();
-            List<Ticket> orderedTickets = SelectTicketsInteractively(mainService);
+            List<Ticket> orderedTickets = SelectTicketsInteractively(_zooService);
 
             if (orderedTickets.Count == 0)
             {
@@ -45,7 +46,7 @@ namespace ZooTicketSystem.Services
                 return;
             }
 
-            Purchase transaction = ExecuteTransaction(mainService, buyer, orderedTickets);
+            Purchase transaction = ExecuteTransaction(_zooService, buyer, orderedTickets);
 
             if (!ConfirmPayment(transaction))
             {
@@ -53,12 +54,12 @@ namespace ZooTicketSystem.Services
                 return;
             }
 
-            mainService.ConfirmPurchase(transaction);
+            _zooService.ConfirmPurchase(transaction);
             _consoleUI.DisplayTransactionSuccess();
-            OutputResults(mainService, transaction);
+            OutputResults(_zooService, transaction);
         }
 
-        private void SetupZoo(ZooService svc)
+        private void SetupZoo(IZooService svc)
         {
             _consoleUI.DisplayZooSetupHeader();
             List<Animal> animalList = FileHelper.LoadAnimalsByType(_animalListArgument);
@@ -101,7 +102,7 @@ namespace ZooTicketSystem.Services
             return person;
         }
 
-        private List<Ticket> SelectTicketsInteractively(ZooService zooService)
+        private List<Ticket> SelectTicketsInteractively(IZooService zooService)
         {
             _consoleUI.DisplayStepHeader("Шаг 3: Формирование билетов");
             _consoleUI.DisplayTicketOptions();
@@ -134,7 +135,7 @@ namespace ZooTicketSystem.Services
             return resultTickets;
         }
 
-        private Purchase ExecuteTransaction(ZooService svc, Customer buyer, List<Ticket> items)
+        private Purchase ExecuteTransaction(IZooService svc, Customer buyer, List<Ticket> items)
         {
             _consoleUI.DisplayTransactionHeader();
             Purchase order = svc.CreatePurchase(buyer, items, DateTime.Now);
@@ -152,7 +153,7 @@ namespace ZooTicketSystem.Services
             return _inputParser.ParseYesNoConfirmation(confirmation);
         }
 
-        private void OutputResults(ZooService svc, Purchase order)
+        private void OutputResults(IZooService svc, Purchase order)
         {
             _consoleUI.DisplayOutputHeader();
             string document = svc.GeneratePurchaseConfirmation(order);
@@ -184,3 +185,4 @@ namespace ZooTicketSystem.Services
         }
     }
 }
+
