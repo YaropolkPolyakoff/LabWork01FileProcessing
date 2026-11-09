@@ -4,7 +4,7 @@ using ZooTicketSystem.Models;
 namespace ZooTicketSystem.Services
 {
     public class PricingService
-    {
+    public class PricingService : IPricingService
         /// <summary>
         /// Вычисляет цену с учетом возрастной скидки
         /// Бизнес-правило 1: Дети (до 12 лет) - 50% скидка

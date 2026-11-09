@@ -36,8 +36,14 @@ namespace ZooTicketSystem
             consoleUI.DisplayArgumentHint(animalListArgument);
             consoleUI.DisplayWelcomeBanner();
 
+            // Composition root: создаём конкретные реализации и внедряем их через интерфейсы (DIP)
+            IPricingService pricingService = new PricingService();
+            IValidationService validationService = new ValidationService();
+            IZooService zooService = new ZooService(pricingService, validationService);
+
             BookingOrchestrator orchestrator = new BookingOrchestrator(
                 animalListArgument,
+                zooService,
                 consoleUI,
                 inputParser,
                 inputReader);
