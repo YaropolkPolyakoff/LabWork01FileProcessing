@@ -40,11 +40,13 @@ namespace ZooTicketSystem
             IPricingService pricingService = new PricingService();
             IValidationService validationService = new ValidationService();
             IZooService zooService = new ZooService(pricingService, validationService);
+            IReportGenerator reportGenerator = new ReportGenerator();
 
             BookingOrchestrator orchestrator = new BookingOrchestrator(
                 animalListArgument,
                 zooService,
                 consoleUI,
+                reportGenerator,
                 inputParser,
                 inputReader);
 
