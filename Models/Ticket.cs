@@ -4,11 +4,11 @@ namespace ZooTicketSystem.Models
 {
     public class Ticket
     {
-        public TicketType Type { get; set; }
-        public decimal BasePrice { get; set; }
-        public DateTime PurchaseDate { get; set; }
-        public DateTime ValidDate { get; set; }
-        public PurchaseStatus Status { get; set; }
+        public TicketType Type { get; private set; }
+        public decimal BasePrice { get; private set; }
+        public DateTime PurchaseDate { get; private set; }
+        public DateTime ValidDate { get; private set; }
+        public PurchaseStatus Status { get; private set; }
 
         public Ticket(TicketType type, decimal basePrice, DateTime purchaseDate, DateTime validDate)
         {
@@ -27,6 +27,15 @@ namespace ZooTicketSystem.Models
             PurchaseDate = purchaseDate;
             ValidDate = validDate;
             Status = PurchaseStatus.Pending;
+        }
+
+        /// <summary>
+        /// Обновляет статус билета.
+        /// Вызывается только из методов Purchase.Confirm() и Purchase.Cancel().
+        /// </summary>
+        internal void SetStatus(PurchaseStatus status)
+        {
+            Status = status;
         }
 
         public static decimal GetBasePriceByType(TicketType type)

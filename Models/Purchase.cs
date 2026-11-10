@@ -7,12 +7,12 @@ namespace ZooTicketSystem.Models
 {
     public class Purchase
     {
-        public Customer Customer { get; set; }
-        public List<Ticket> Tickets { get; set; }
-        public decimal TotalAmount { get; set; }
-        public PurchaseStatus Status { get; set; }
-        public DateTime PurchaseDate { get; set; }
-        public string ConfirmationNumber { get; set; }
+        public Customer Customer { get; private set; }
+        public List<Ticket> Tickets { get; private set; }
+        public decimal TotalAmount { get; private set; }
+        public PurchaseStatus Status { get; private set; }
+        public DateTime PurchaseDate { get; private set; }
+        public string ConfirmationNumber { get; private set; }
 
         public Purchase(Customer customer, List<Ticket> tickets, DateTime purchaseDate, string confirmationNumber)
         {
@@ -44,6 +44,15 @@ namespace ZooTicketSystem.Models
             TotalAmount = 0;
         }
 
+        /// <summary>
+        /// Устанавливает итоговую сумму покупки.
+        /// Вызывается сервисом после расчёта цены до подтверждения покупки.
+        /// </summary>
+        public void SetTotalAmount(decimal amount)
+        {
+            TotalAmount = amount;
+        }
+
         public static string GenerateConfirmationNumber()
         {
             // Using Guid ensures uniqueness without needing Random
@@ -66,7 +75,7 @@ namespace ZooTicketSystem.Models
             Status = PurchaseStatus.Confirmed;
             foreach (var ticket in Tickets)
             {
-                ticket.Status = PurchaseStatus.Confirmed;
+                ticket.SetStatus(PurchaseStatus.Confirmed);
             }
         }
 
@@ -80,7 +89,7 @@ namespace ZooTicketSystem.Models
             Status = PurchaseStatus.Cancelled;
             foreach (var ticket in Tickets)
             {
-                ticket.Status = PurchaseStatus.Cancelled;
+                ticket.SetStatus(PurchaseStatus.Cancelled);
             }
         }
 
