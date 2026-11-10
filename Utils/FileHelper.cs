@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using ZooTicketSystem.Models;
@@ -137,19 +136,15 @@ namespace ZooTicketSystem.Utils
                 
                 if (!File.Exists(filePath))
                 {
-                    Console.WriteLine("Файл animals.txt не найден. Загружаем животных по умолчанию.");
                     return GetDefaultAnimals();
                 }
                 
                 try
                 {
                     animals = ReadAnimalsFromFile(filePath);
-                    Console.WriteLine("Загружен полный список животных из зоопарка!");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Ошибка при загрузке списка: " + ex.Message);
-                    Console.WriteLine("Загружаем животных по умолчанию.");
                     return GetDefaultAnimals();
                 }
             }
@@ -157,7 +152,6 @@ namespace ZooTicketSystem.Utils
             {
                 // По умолчанию или если указано "default"
                 animals = GetDefaultAnimals();
-                Console.WriteLine("Загружены животные по умолчанию.");
             }
             
             return animals;
@@ -197,7 +191,6 @@ namespace ZooTicketSystem.Utils
                 
                 AssertCustomerDataComplete(customerInfo);
                 
-                Console.WriteLine("Данные покупателя успешно загружены из файла");
                 
                 return new Customer(customerInfo["name"], int.Parse(customerInfo["age"]), 
                     customerInfo["email"], customerInfo.ContainsKey("phone") ? customerInfo["phone"] : null);
@@ -265,7 +258,6 @@ namespace ZooTicketSystem.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Ошибка при записи в файл: " + ex.Message);
                 throw;
             }
         }
@@ -298,7 +290,6 @@ namespace ZooTicketSystem.Utils
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Ошибка при добавлении в файл: " + ex.Message);
                 throw;
             }
         }
