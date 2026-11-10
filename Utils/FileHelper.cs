@@ -105,11 +105,7 @@ namespace ZooTicketSystem.Utils
                     }
                     catch (FormatException formatEx)
                     {
-                        Console.WriteLine("Предупреждение: " + formatEx.Message);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("Ошибка: " + ex.Message);
+                        throw new FormatException("Ошибка формата строки в файле животных: " + formatEx.Message, formatEx);
                     }
                 }
             }
