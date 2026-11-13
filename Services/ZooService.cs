@@ -48,7 +48,9 @@ namespace ZooTicketSystem.Services
         {
             if (!zoo.IsOpenOnDay(purchaseDate))
             {
-                throw new InvalidOperationException("Зоопарк закрыт в понедельники. Выберите другой день.");
+                string closedDayName = GetDayNameInRussian(purchaseDate.DayOfWeek);
+                throw new InvalidOperationException(
+                    $"Зоопарк закрыт в {closedDayName}. Выберите другой день.");
             }
 
             validationService.ValidatePurchaseRequest(customer, tickets, purchaseDate);
@@ -84,6 +86,29 @@ namespace ZooTicketSystem.Services
             
             }
             purchase.Confirm();
+        }
+
+        private static string GetDayNameInRussian(DayOfWeek day)
+        {
+            switch (day)
+            {
+                case DayOfWeek.Monday:
+                    return "понедельник";
+                case DayOfWeek.Tuesday:
+                    return "вторник";
+                case DayOfWeek.Wednesday:
+                    return "среду";
+                case DayOfWeek.Thursday:
+                    return "четверг";
+                case DayOfWeek.Friday:
+                    return "пятницу";
+                case DayOfWeek.Saturday:
+                    return "субботу";
+                case DayOfWeek.Sunday:
+                    return "воскресенье";
+                default:
+                    return day.ToString();
+            }
         }
     }
 }
