@@ -109,16 +109,17 @@ namespace ZooTicketSystem.Services
             while (true)
             {
                 string input = _consoleUI.ReadOptionalLine(
-                    "\nВыберите тип билета (1-4) или 0 для завершения: ");
+                    $"\nВыберите тип билета (1-{Enum.GetValues<TicketType>().Length}) или 0 для завершения: ");
 
                 if (input == "0")
                 {
                     break;
                 }
 
-                if (_consoleUI.TryReadTicketTypeChoice(input, out TicketType selectedType))
+                TicketType? selectedType = _consoleUI.ParseTicketTypeChoice(input);
+                if (selectedType.HasValue)
                 {
-                    Ticket ticket = zooService.CreateTicket(selectedType);
+                    Ticket ticket = zooService.CreateTicket(selectedType.Value);
                     resultTickets.Add(ticket);
                     _consoleUI.DisplayTicketAdded(ticket.Type, ticket.BasePrice);
                 }
@@ -175,4 +176,3 @@ namespace ZooTicketSystem.Services
         }
     }
 }
-
