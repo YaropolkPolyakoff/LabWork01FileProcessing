@@ -5,7 +5,6 @@ using ZooTicketSystem.Models;
 namespace ZooTicketSystem.Services
 {
     public class ValidationService
-    public class ValidationService : IValidationService
         public void ValidatePurchaseRequest(Customer customer, List<Ticket> tickets, DateTime purchaseDate)
         {
             if (customer == null)

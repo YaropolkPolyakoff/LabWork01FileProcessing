@@ -8,9 +8,9 @@ namespace ZooTicketSystem.Services
     {
         private Zoo zoo;
         private readonly IPricingService pricingService;
-        private readonly IValidationService validationService;
+        private readonly ValidationService validationService;
 
-        public ZooService(IPricingService pricingService, IValidationService validationService)
+        public ZooService(IPricingService pricingService, ValidationService validationService)
         {
             zoo = new Zoo("Центральный зоопарк", 9, 18);
             this.pricingService = pricingService ?? throw new ArgumentNullException(nameof(pricingService));
