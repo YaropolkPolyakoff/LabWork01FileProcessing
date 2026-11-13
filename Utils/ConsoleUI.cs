@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using ZooTicketSystem.Models;
+using System.Collections.Generic;
 
 namespace ZooTicketSystem.Utils
 {
@@ -9,6 +9,100 @@ namespace ZooTicketSystem.Utils
     /// </summary>
     public class ConsoleUI
     {
+        // ──────────────────── Ввод данных из консоли ────────────────────
+
+        /// <summary>
+        /// Запрашивает строку, пока пользователь не введёт непустое значение.
+        /// </summary>
+        public string ReadNonEmptyLine(string prompt, string errorMessage)
+        {
+            Console.Write(prompt);
+            string text = Console.ReadLine()?.Trim();
+            while (string.IsNullOrWhiteSpace(text))
+            {
+                Console.Write(errorMessage);
+                text = Console.ReadLine()?.Trim();
+            }
+            return text;
+        }
+
+        /// <summary>
+        /// Запрашивает целое положительное число, повторяя запрос при ошибке.
+        /// Использует встроенный int.TryParse вместо отдельного класса-парсера.
+        /// </summary>
+        public int ReadPositiveInteger(string prompt, string errorMessage)
+        {
+            Console.Write(prompt);
+            int parsed = 0;
+            while (parsed <= 0)
+            {
+                string raw = Console.ReadLine()?.Trim();
+                if (int.TryParse(raw, out parsed) && parsed > 0)
+                {
+                    break;
+                }
+                parsed = 0;
+                Console.Write(errorMessage);
+            }
+            return parsed;
+        }
+
+        /// <summary>
+        /// Запрашивает email-адрес, проверяя наличие символа «@».
+        /// </summary>
+        public string ReadEmail(string prompt, string errorMessage)
+        {
+            Console.Write(prompt);
+            string email = Console.ReadLine()?.Trim();
+            while (string.IsNullOrWhiteSpace(email) || !email.Contains("@"))
+            {
+                Console.Write(errorMessage);
+                email = Console.ReadLine()?.Trim();
+            }
+            return email;
+        }
+
+        /// <summary>
+        /// Запрашивает строку, допуская пустой ввод.
+        /// </summary>
+        public string ReadOptionalLine(string prompt)
+        {
+            Console.Write(prompt);
+            return Console.ReadLine()?.Trim();
+        }
+
+        /// <summary>
+        /// Запрашивает подтверждение и возвращает true для «да/д/yes/y».
+        /// </summary>
+        public bool ReadYesNoConfirmation(string prompt)
+        {
+            string answer = ReadOptionalLine(prompt) ?? string.Empty;
+            return answer.Equals("да",  StringComparison.CurrentCultureIgnoreCase)
+                || answer.Equals("д",   StringComparison.CurrentCultureIgnoreCase)
+                || answer.Equals("yes", StringComparison.CurrentCultureIgnoreCase)
+                || answer.Equals("y",   StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Разбирает номер пункта меню билетов в значение TicketType.
+        /// Соответствие пунктов типам зафиксировано явно по именам значений
+        /// перечисления — порядок объявления в enum не влияет на результат.
+        /// </summary>
+        public bool TryReadTicketTypeChoice(string input, out TicketType ticketType)
+        {
+            ticketType = TicketType.Adult;
+            switch (input?.Trim())
+            {
+                case "1": ticketType = TicketType.Adult;   return true;
+                case "2": ticketType = TicketType.Child;   return true;
+                case "3": ticketType = TicketType.Student; return true;
+                case "4": ticketType = TicketType.Family;  return true;
+                default:  return false;
+            }
+        }
+
+        // ──────────────────── Вывод данных в консоль ────────────────────
+
         public void DisplayStepHeader(string stepTitle)
         {
             Console.WriteLine($">>> {stepTitle}");

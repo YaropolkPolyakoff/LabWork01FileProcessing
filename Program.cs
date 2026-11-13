@@ -1,5 +1,4 @@
 using System;
-using ZooTicketSystem.Models;
 using ZooTicketSystem.Services;
 using ZooTicketSystem.Utils;
 
@@ -30,8 +29,6 @@ namespace ZooTicketSystem
                 : "";
 
             ConsoleUI consoleUI = new ConsoleUI();
-            InputParser inputParser = new InputParser();
-            InputReader inputReader = new InputReader(new InputParser());
 
             consoleUI.DisplayArgumentHint(animalListArgument);
             consoleUI.DisplayWelcomeBanner();
@@ -46,9 +43,7 @@ namespace ZooTicketSystem
                 animalListArgument,
                 zooService,
                 consoleUI,
-                reportGenerator,
-                inputParser,
-                inputReader);
+                reportGenerator);
 
             try
             {
