@@ -117,7 +117,7 @@ namespace ZooTicketSystem.Services
 
                 if (_userInterface.TryReadTicketTypeChoice(input, out TicketType selectedType))
                 {
-                    Ticket ticket = zooService.CreateTicket(selectedType);
+                    Ticket ticket = zooService.CreateTicket(selectedType.Value);
                     resultTickets.Add(ticket);
                     _userInterface.DisplayTicketAdded(ticket.Type, ticket.BasePrice);
                 }
@@ -174,4 +174,3 @@ namespace ZooTicketSystem.Services
         }
     }
 }
-

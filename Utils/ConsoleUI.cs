@@ -85,21 +85,19 @@ namespace ZooTicketSystem.Utils
         }
 
         /// <summary>
-        /// Разбирает номер пункта меню билетов в значение TicketType.
-        /// Соответствие пунктов типам зафиксировано явно по именам значений
-        /// перечисления — порядок объявления в enum не влияет на результат.
+        /// Разбирает строку с порядковым номером (1..N) в значение TicketType.
+        /// Список типов получается динамически через Enum.GetValues, поэтому
+        /// добавление нового значения в перечисление не требует правок этого метода.
+        /// Возвращает найденный TicketType, либо null при некорректном вводе.
         /// </summary>
-        public bool TryReadTicketTypeChoice(string input, out TicketType ticketType)
+        public TicketType? ParseTicketTypeChoice(string input)
         {
-            ticketType = TicketType.Adult;
-            switch (input?.Trim())
+            TicketType[] values = Enum.GetValues<TicketType>();
+            if (int.TryParse(input?.Trim(), out int index) && index >= 1 && index <= values.Length)
             {
-                case "1": ticketType = TicketType.Adult;   return true;
-                case "2": ticketType = TicketType.Child;   return true;
-                case "3": ticketType = TicketType.Student; return true;
-                case "4": ticketType = TicketType.Family;  return true;
-                default:  return false;
+                return values[index - 1];
             }
+            return null;
         }
 
         // ──────────────────── Вывод данных в консоль ────────────────────
@@ -113,10 +111,11 @@ namespace ZooTicketSystem.Utils
         public void DisplayTicketOptions()
         {
             Console.WriteLine("\nДоступные типы билетов:");
-            Console.WriteLine("1. Adult - Взрослый билет (500 руб.)");
-            Console.WriteLine("2. Child - Детский билет (250 руб.)");
-            Console.WriteLine("3. Student - Студенческий билет (350 руб.)");
-            Console.WriteLine("4. Family - Семейный билет (1500 руб.)");
+            TicketType[] values = Enum.GetValues<TicketType>();
+            for (int i = 0; i < values.Length; i++)
+            {
+                Console.WriteLine($"{i + 1}. {values[i]}");
+            }
             Console.WriteLine("0. Завершить выбор");
         }
 
