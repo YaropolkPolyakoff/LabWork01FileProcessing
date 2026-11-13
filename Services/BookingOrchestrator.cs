@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using ZooTicketSystem.Models;
-using ZooTicketSystem.Utils;
 
 namespace ZooTicketSystem.Services
 {
@@ -13,18 +12,18 @@ namespace ZooTicketSystem.Services
     {
         private readonly string _animalListArgument;
         private readonly IZooService _zooService;
-        private readonly ConsoleUI _consoleUI;
+        private readonly IUserInterface _userInterface;
         private readonly IReportGenerator _reportGenerator;
 
         public BookingOrchestrator(
             string animalListArgument,
             IZooService zooService,
-            ConsoleUI consoleUI,
+            IUserInterface userInterface,
             IReportGenerator reportGenerator)
         {
             _animalListArgument = animalListArgument;
             _zooService = zooService ?? throw new ArgumentNullException(nameof(zooService));
-            _consoleUI = consoleUI;
+            _userInterface = userInterface ?? throw new ArgumentNullException(nameof(userInterface));
             _reportGenerator = reportGenerator ?? throw new ArgumentNullException(nameof(reportGenerator));
         }
 
@@ -39,7 +38,7 @@ namespace ZooTicketSystem.Services
 
             if (orderedTickets.Count == 0)
             {
-                _consoleUI.DisplayNoTicketsSelected();
+                _userInterface.DisplayNoTicketsSelected();
                 return;
             }
 
@@ -47,18 +46,18 @@ namespace ZooTicketSystem.Services
 
             if (!ConfirmPayment(transaction))
             {
-                _consoleUI.DisplayPaymentCancelled();
+                _userInterface.DisplayPaymentCancelled();
                 return;
             }
 
             _zooService.ConfirmPurchase(transaction);
-            _consoleUI.DisplayTransactionSuccess();
+            _userInterface.DisplayTransactionSuccess();
             OutputResults(_zooService, transaction);
         }
 
         private void SetupZoo(IZooService svc)
         {
-            _consoleUI.DisplayZooSetupHeader();
+            _userInterface.DisplayZooSetupHeader();
             List<Animal> animalList = FileHelper.LoadAnimalsByType(_animalListArgument);
 
             Zoo facility = svc.GetZoo();
@@ -67,95 +66,94 @@ namespace ZooTicketSystem.Services
                 facility.AddAnimal(animal);
             }
 
-            _consoleUI.DisplayAnimalsAdded(animalList.Count);
+            _userInterface.DisplayAnimalsAdded(animalList.Count);
 
             if (animalList.Count > 0)
             {
-                _consoleUI.DisplayAnimalsInfo(svc.GetAnimalsInfo());
+                _userInterface.DisplayAnimalsInfo(svc.GetAnimalsInfo());
             }
         }
 
         private Customer GetCustomerFromConsole()
         {
-            _consoleUI.DisplayCustomerHeader();
-            string name = _consoleUI.ReadNonEmptyLine(
+            _userInterface.DisplayCustomerHeader();
+            string name = _userInterface.ReadNonEmptyLine(
                 "Введите ваше имя: ",
                 "Имя не может быть пустым. Введите ваше имя: ");
 
-            int age = _consoleUI.ReadPositiveInteger(
+            int age = _userInterface.ReadPositiveInteger(
                 "Введите ваш возраст: ",
                 "Введите корректный возраст (положительное число): ");
 
-            string email = _consoleUI.ReadEmail(
+            string email = _userInterface.ReadEmail(
                 "Введите ваш email: ",
                 "Введите корректный email: ");
 
-            string phone = _consoleUI.ReadOptionalLine(
+            string phone = _userInterface.ReadOptionalLine(
                 "Введите ваш телефон (или нажмите Enter для пропуска): ");
 
             Customer person = new Customer(name, age, email, phone);
-            string category = _consoleUI.GetCustomerCategory(person);
-            _consoleUI.DisplayCustomerCategory(person, category);
+            string category = _userInterface.GetCustomerCategory(person);
+            _userInterface.DisplayCustomerCategory(person, category);
             return person;
         }
 
         private List<Ticket> SelectTicketsInteractively(IZooService zooService)
         {
-            _consoleUI.DisplayStepHeader("Шаг 3: Формирование билетов");
-            _consoleUI.DisplayTicketOptions();
+            _userInterface.DisplayStepHeader("Шаг 3: Формирование билетов");
+            _userInterface.DisplayTicketOptions();
 
             List<Ticket> resultTickets = new List<Ticket>();
 
             while (true)
             {
-                string input = _consoleUI.ReadOptionalLine(
-                    $"\nВыберите тип билета (1-{Enum.GetValues<TicketType>().Length}) или 0 для завершения: ");
+                string input = _userInterface.ReadOptionalLine(
+                    "\nВыберите тип билета (1-4) или 0 для завершения: ");
 
                 if (input == "0")
                 {
                     break;
                 }
 
-                TicketType? selectedType = _consoleUI.ParseTicketTypeChoice(input);
-                if (selectedType.HasValue)
+                if (_userInterface.TryReadTicketTypeChoice(input, out TicketType selectedType))
                 {
                     Ticket ticket = zooService.CreateTicket(selectedType.Value);
                     resultTickets.Add(ticket);
-                    _consoleUI.DisplayTicketAdded(ticket.Type, ticket.BasePrice);
+                    _userInterface.DisplayTicketAdded(ticket.Type, ticket.BasePrice);
                 }
                 else
                 {
-                    _consoleUI.DisplayInvalidTicketChoice();
+                    _userInterface.DisplayInvalidTicketChoice();
                 }
             }
 
-            _consoleUI.DisplayTicketsCount(resultTickets.Count);
+            _userInterface.DisplayTicketsCount(resultTickets.Count);
             return resultTickets;
         }
 
         private Purchase ExecuteTransaction(IZooService svc, Customer buyer, List<Ticket> items)
         {
-            _consoleUI.DisplayTransactionHeader();
+            _userInterface.DisplayTransactionHeader();
             Purchase order = svc.CreatePurchase(buyer, items, DateTime.Now);
-            _consoleUI.DisplayTransactionId(order.ConfirmationNumber);
+            _userInterface.DisplayTransactionId(order.ConfirmationNumber);
             return order;
         }
 
         private bool ConfirmPayment(Purchase order)
         {
-            _consoleUI.DisplayOrderSummary(order);
-            return _consoleUI.ReadYesNoConfirmation("\nПодтвердите оплату (да/нет): ");
+            _userInterface.DisplayOrderSummary(order);
+            return _userInterface.ReadYesNoConfirmation("\nПодтвердите оплату (да/нет): ");
         }
 
         private void OutputResults(IZooService svc, Purchase order)
         {
-            _consoleUI.DisplayOutputHeader();
+            _userInterface.DisplayOutputHeader();
             string document = _reportGenerator.GeneratePurchaseConfirmation(order);
-            _consoleUI.DisplayDocument(document);
+            _userInterface.DisplayDocument(document);
 
-            if (_consoleUI.ReadYesNoConfirmation("\nСохранить подтверждение в файл? (да/нет): "))
+            if (_userInterface.ReadYesNoConfirmation("\nСохранить подтверждение в файл? (да/нет): "))
             {
-                string filename = _consoleUI.ReadOptionalLine(
+                string filename = _userInterface.ReadOptionalLine(
                     "Введите имя файла (или нажмите Enter для 'purchase_confirmation.txt'): ");
 
                 if (string.IsNullOrEmpty(filename))
@@ -166,11 +164,11 @@ namespace ZooTicketSystem.Services
                 try
                 {
                     FileHelper.WriteOutputToFile(filename, document);
-                    _consoleUI.DisplayFileSaved(filename);
+                    _userInterface.DisplayFileSaved(filename);
                 }
                 catch (Exception ex)
                 {
-                    _consoleUI.DisplayFileSaveError(ex.Message);
+                    _userInterface.DisplayFileSaveError(ex.Message);
                 }
             }
         }

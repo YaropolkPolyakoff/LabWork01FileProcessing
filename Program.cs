@@ -35,7 +35,7 @@ namespace ZooTicketSystem
 
             // Composition root: создаём конкретные реализации и внедряем их через интерфейсы (DIP)
             IPricingService pricingService = new PricingService();
-            IValidationService validationService = new ValidationService();
+            ValidationService validationService = new ValidationService();
             IZooService zooService = new ZooService(pricingService, validationService);
             IReportGenerator reportGenerator = new ReportGenerator();
 

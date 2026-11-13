@@ -1,13 +1,14 @@
 using System;
 using ZooTicketSystem.Models;
 using System.Collections.Generic;
+using ZooTicketSystem.Services;
 
 namespace ZooTicketSystem.Utils
 {
     /// <summary>
     /// Отвечает за вывод информации в консоль
     /// </summary>
-    public class ConsoleUI
+    public class ConsoleUI : IUserInterface
     {
         // ──────────────────── Ввод данных из консоли ────────────────────
 
