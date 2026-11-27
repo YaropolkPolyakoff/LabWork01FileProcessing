@@ -1,7 +1,5 @@
 using System;
 using ZooTicketSystem.Models;
-using System.Collections.Generic;
-using ZooTicketSystem.Services;
 
 namespace ZooTicketSystem.Utils
 {
@@ -85,19 +83,21 @@ namespace ZooTicketSystem.Utils
         }
 
         /// <summary>
-        /// Разбирает строку с порядковым номером (1..N) в значение TicketType.
-        /// Список типов получается динамически через Enum.GetValues, поэтому
-        /// добавление нового значения в перечисление не требует правок этого метода.
-        /// Возвращает найденный TicketType, либо null при некорректном вводе.
+        /// Пытается разобрать строку с порядковым номером (1..N) в значение TicketType.
+        /// Список типов получается динамически через Enum.GetValues — добавление
+        /// нового значения в перечисление не требует правок этого метода.
+        /// Возвращает true и заполняет ticketType при успехе, false при некорректном вводе.
         /// </summary>
-        public TicketType? ParseTicketTypeChoice(string input)
+        public bool TryReadTicketTypeChoice(string input, out TicketType ticketType)
         {
             TicketType[] values = Enum.GetValues<TicketType>();
             if (int.TryParse(input?.Trim(), out int index) && index >= 1 && index <= values.Length)
             {
-                return values[index - 1];
+                ticketType = values[index - 1];
+                return true;
             }
-            return null;
+            ticketType = default;
+            return false;
         }
 
         // ──────────────────── Вывод данных в консоль ────────────────────

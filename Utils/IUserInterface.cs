@@ -1,7 +1,7 @@
 using System;
 using ZooTicketSystem.Models;
 
-namespace ZooTicketSystem.Services
+namespace ZooTicketSystem.Utils
 {
     /// <summary>
     /// Абстракция пользовательского взаимодействия.
